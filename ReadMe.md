@@ -66,7 +66,7 @@ poetry run python main.py
 「Expiration」：设置令牌有效期（建议选「30 days」或「Custom」，定期更换更安全）；
 「Scopes」（权限）：必须勾选「repo」相关所有权限（否则无法推送代码），其他权限按需勾选（无需额外勾选）；
 拉到页面最下方，点击「Generate token」（生成令牌）；
-✅ 关键：令牌生成后会仅显示一次，立即复制保存（比如记在备忘录里），关闭页面后就再也看不到了！
+关键：令牌生成后会仅显示一次，立即复制保存（比如记在备忘录里），关闭页面后就再也看不到了！
 
 步骤 2：用 PAT 重新执行 git push
 回到终端，重新执行 git push，会再次提示输入用户名和密码：
@@ -108,7 +108,38 @@ git checkout main
 
 # 拉取远程 main 分支的最新代码（避免合并时冲突）
 git pull origin main
-
 # 把 master 的代码合并到 main
-git merge master  
+git merge master
+# 合并 master 到 main 并允许无关历史
+git merge master --allow-unrelated-histories
+```
+
+### 安装包速度慢
+```shell
+# 在pyproject.toml文件中，添加一下内容
+# 主索引源（优先级最高）
+index-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+# 备用索引源（主源找不到时用）
+extra-index-url = ["https://pypi.org/simple/"]
+# 可选：禁用默认的 PyPI 源（避免冗余）
+no-default-index = true
+```
+
+### tensorflow下载较慢
+```shell
+# 核心命令：清华源（对 TensorFlow 镜像支持最好）+ 并行下载 + 详细日志（验证是否走镜像）
+uv add tensorflow --index-url https://pypi.tuna.tsinghua.edu.cn/simple/ --verbose
+```
+
+### 在已创建的venv中手动安装pip
+```shell
+# 1. 激活venv（可选，但更直观）
+source ./.venv/bin/activate
+
+# 2. 用Python内置模块安装并升级pip
+python -m ensurepip --upgrade
+
+# 3. 验证pip是否存在
+# 激活venv后直接用，或：./.venv/bin/pip --version
+pip --version
 ```
