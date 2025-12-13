@@ -1296,6 +1296,7 @@ dependencies = [
     { name = "poetry" },
     { name = "scikit-learn" },
     { name = "tensorflow" },
+    { name = "trimesh" },
     { name = "xgboost" },
 ]
 
@@ -1307,6 +1308,7 @@ requires-dist = [
     { name = "poetry", specifier = ">=2.2.1" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "tensorflow", specifier = ">=2.20.0" },
+    { name = "trimesh", specifier = ">=4.10.1" },
     { name = "xgboost", specifier = ">=3.1.2" },
 ]
 
@@ -1638,6 +1640,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/cc/18/0bbf3884e9eaa38819ebe46a7bd25dcd56b67434402b66a58c4b8e552575/tomlkit-0.13.3.tar.gz", hash = "sha256:430cf247ee57df2b94ee3fbe588e71d362a941ebb545dec29b53961d61add2a1", size = 185207, upload-time = "2025-06-05T07:13:44.947Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/bd/75/8539d011f6be8e29f339c42e633aae3cb73bffa95dd0f9adec09b9c58e85/tomlkit-0.13.3-py3-none-any.whl", hash = "sha256:c89c649d79ee40629a9fda55f8ace8c6a1b42deb912b2a8fd8d942ddadb606b0", size = 38901, upload-time = "2025-06-05T07:13:43.546Z" },
+]
+
+[[package]]
+name = "trimesh"
+version = "4.10.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/83/69/eedfeb084460d429368e03db83ed41b18d6de4fd4945de7eb8874b9fae36/trimesh-4.10.1.tar.gz", hash = "sha256:2067ebb8dcde0d7f00c2a85bfcae4aa891c40898e5f14232592429025ee2c593", size = 831998, upload-time = "2025-12-07T00:39:05.838Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d5/0c/f08f0d16b4f97ec2ea6d542b9a70472a344384382fa3543a12ec417cc063/trimesh-4.10.1-py3-none-any.whl", hash = "sha256:4e81fae696683dfe912ef54ce124869487d35d267b87e10fe07fc05ab62aaadb", size = 737037, upload-time = "2025-12-07T00:39:04.086Z" },
 ]
 
 [[package]]
