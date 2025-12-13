@@ -23,8 +23,13 @@ uv init my_project --python 3.13
 # 安装生产依赖（如 requests），自动更新 pyproject.toml 和 poetry.lock
 uv add requests
 
-# 读取 poetry.lock 安装所有依赖
+# 读取“poetry.lock”安装所有依赖
+# UV会按优先级读取以下文件， poetry.lock（精确版本）和 pyproject.toml（依赖约束与项目配置）
 uv install
+
+# UV会按优先级读取以下文件， poetry.lock（精确版本）和 pyproject.toml（依赖约束与项目配置）
+# uv sync 会对比当前环境，确保环境与锁文件完全一致（增删改依赖）
+uv sync
 ```
 
 ### 升级依赖
@@ -58,7 +63,7 @@ poetry run python main.py
 ### 配置github验证
 ```text
 步骤 1：生成 GitHub Personal Access Token（PAT）
-打开 GitHub 官网，登录你的账号（cloudxy）；
+打开 GitHub 官网，登录你的账号；
 点击右上角头像 →「Settings」（设置）→ 左侧栏拉到最下方，点击「Developer settings」（开发者设置）；
 左侧栏点击「Personal access tokens」→「Tokens (classic)」→ 右上角「Generate new token」（生成新令牌）；
 填写令牌信息：
@@ -71,7 +76,7 @@ poetry run python main.py
 步骤 2：用 PAT 重新执行 git push
 回到终端，重新执行 git push，会再次提示输入用户名和密码：
 「Username for 'https://github.com'」：输入你的 GitHub 用户名
-「Password for 'https://cloudxy@github.com'」：粘贴步骤 1 生成的 PAT 令牌（不是你的 GitHub 密码！），粘贴后按回车即可
+「Password for 'https://xxx@github.com'」：粘贴步骤 1 生成的 PAT 令牌（不是你的 GitHub 密码！），粘贴后按回车即可
 ```
 
 
@@ -91,8 +96,9 @@ git remote set-url origin https://xxx
 
 # 查看本地和远程所有分支
 git branch -a
-
-# 拉去远程所有分支的最新状态
+# 拉取远程信息并清理无效分支（推荐）
+git fetch origin --prune
+# 拉取远程所有分支的最新状态
 git fetch origin
 
 # 从本地 master 分支创建 main 分支（继承 master 所有代码）

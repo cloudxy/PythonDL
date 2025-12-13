@@ -11,6 +11,7 @@ dependencies = [
     "poetry>=2.2.1",
     "scikit-learn>=1.8.0",
     "tensorflow>=2.20.0",
+    "trimesh>=4.10.1",
     "xgboost>=3.1.2",
 ]
 # 主索引源（优先级最高）
