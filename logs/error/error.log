@@ -1,0 +1,12 @@
+2026-03-07 12:04:04,985 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+Exception: None
+
+2026-03-07 12:04:15,011 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+Exception: None
+
+2026-03-07 12:04:17,477 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+Exception: None
+
+2026-03-07 12:04:22,801 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+Exception: None
+

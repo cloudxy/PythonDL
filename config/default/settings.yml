@@ -1,0 +1,76 @@
+# 默认配置
+app:
+  name: "PythonDL"
+  version: "1.0.0"
+  debug: true
+  env: "local"
+
+# 服务器配置
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+
+# 数据库配置
+database:
+  host: "127.0.0.1"
+  port: 3306
+  user: "python"
+  password: "123456"
+  name: "py_demo"
+  echo: false
+
+# 缓存配置
+cache:
+  dir: "runtimes/cache"
+  ttl: 3600
+
+# 日志配置
+logging:
+  level: "INFO"
+  dir: "logs"
+  retention_days: 30
+
+# 文件存储配置
+data:
+  dir: "data"
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  models_dir: "data/models"
+
+temp:
+  dir: "temps"
+
+files:
+  dir: "files"
+  export_dir: "files/exports"
+  images_dir: "files/images"
+  videos_dir: "files/videos"
+
+# 安全配置
+security:
+  secret_key: "your-secret-key-here"
+  session_expire_hours: 24
+  password_min_length: 6
+
+# API配置
+api:
+  prefix: "/api"
+  docs_url: "/docs"
+  redoc_url: "/redoc"
+  host: "0.0.0.0"
+  port: 8000
+  timeout: 30
+
+# CORS配置
+cors:
+  origins: ["*"]
+  allow_credentials: true
+  allow_methods: ["*"]
+  allow_headers: ["*"]
+
+# 模型配置
+models:
+  batch_size: 32
+  epochs: 100
+  learning_rate: 0.001

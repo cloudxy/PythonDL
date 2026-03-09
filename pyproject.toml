@@ -1,22 +1,125 @@
 [project]
 name = "pythondl"
 version = "0.1.0"
-description = "python deep learn"
+description = "PythonDL - 高级算法框架"
 readme = "ReadMe.md"
 requires-python = ">=3.13"
 dependencies = [
-    "matplotlib>=3.10.8",
+    "dynaconf>=3.2.12",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+    "gunicorn>=21.2.0",
+    "sqlalchemy>=2.0.0",
+    "pymysql>=1.1.0",
+    "alembic>=1.12.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.12.0",
+    "python-dotenv>=1.2.1",
+    "structlog>=24.0.0",
     "numpy>=2.3.5",
     "pandas>=2.3.3",
-    "poetry>=2.2.1",
     "scikit-learn>=1.8.0",
     "tensorflow>=2.20.0",
-    "trimesh>=4.10.1",
     "xgboost>=3.1.2",
+    "matplotlib>=3.10.8",
+    "python-pptx>=1.0.2",
+    "pyyaml>=6.0.3",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.2",
+    "python-multipart>=0.0.6",
+    "email-validator>=2.3.0",
+    "redis>=5.0.1",
+    "trimesh>=4.10.1",
+    "python-jose[cryptography]>=3.3.0",
+    "bcrypt>=4.0.0",
+    "passlib>=1.7.4",
 ]
-# 主索引源（优先级最高）
-index-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-# 备用索引源（主源找不到时用）
-extra-index-url = ["https://pypi.org/simple/"]
-# 可选：禁用默认的 PyPI 源（避免冗余）
-no-default-index = true
+
+[tool.poetry]
+name = "pythondl"
+version = "0.1.0"
+description = "python deep learn"
+authors = []
+readme = "ReadMe.md"
+repository = ""
+
+[tool.poetry.dependencies]
+python = ">=3.13"
+dynaconf = ">=3.2.12"
+fastapi = ">=0.100.0"
+logger = ">=1.4"
+matplotlib = ">=3.10.8"
+numpy = ">=2.3.5"
+pandas = ">=2.3.3"
+poetry = ">=2.2.1"
+pydantic-settings = ">=2.12.0"
+python-pptx = ">=1.0.2"
+pyyaml = ">=6.0.3"
+scikit-learn = ">=1.8.0"
+tensorflow = ">=2.20.0"
+trimesh = ">=4.10.1"
+uvicorn = ">=0.23.0"
+xgboost = ">=3.1.2"
+redis = ">=5.0.1"
+mysql-connector-python = ">=8.3.0"
+python-multipart = ">=0.0.6"
+beautifulsoup4 = ">=4.12.2"
+requests = ">=2.31.0"
+
+[tool.poetry.dev-dependencies]
+black = ">=24.0.0"
+flake8 = ">=6.0.0"
+isort = ">=5.0.0"
+mypy = ">=1.13.0"
+pytest = ">=7.0.0"
+pytest-cov = ">=4.0.0"
+redis = ">=4.0.0"
+sqlalchemy = ">=2.0.0"
+structlog = ">=24.0.0"
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "pypi"
+url = "https://pypi.org/simple/"
+priority = "secondary"
+
+
+[tool.mypy]
+python_version = "3.13"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+check_untyped_defs = true
+disallow_untyped_calls = true
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-v --cov=app --cov-report=html --cov-report=term"
+
+[dependency-groups]
+dev = [
+    "black>=26.1.0",
+    "flake8>=7.3.0",
+    "isort>=7.0.0",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+]
+

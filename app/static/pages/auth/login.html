@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - PythonDL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 1, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin: 0;
+        }
+        
+        .login-header p {
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 175, 238, 0.1);
+        }
+        
+        .form-group button {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .form-group button:hover {
+            background: linear-gradient(135deg, #764ba 0%, #667eea 100%);
+            transform: translateY(-2px);
+        }
+        
+        .form-group .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .form-group .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .form-group .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>欢迎登录</h1>
+            <p>PythonDL 智能分析平台</p>
+        </div>
+        <form id="loginForm" class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" name="username" required placeholder="请输入用户名">
+            
+            <label for="password">密码</label>
+            <input type="password" id="password" name="password" required placeholder="请输入密码">
+            
+            <button type="submit">登录</button>
+            <div class="forgot-password">
+                <a href="/static/pages/auth/forgot-password.html">忘记密码？</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
