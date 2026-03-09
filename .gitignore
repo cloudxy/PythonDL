@@ -1,4 +1,59 @@
 dist
 ./.venv
+./venv
+./venv/*
 .python-version
 .idea
+
+config
+
+# 日志文件
+logs/*.log
+logs/*.log.*
+
+# 缓存文件
+runtimes/cache/*
+runtimes/sessions/*
+!runtimes/.gitkeep
+
+# 临时文件
+temps/*
+!temps/.gitkeep
+
+# 数据文件
+data/*
+!data/.gitkeep
+
+# 导出文件
+files/exports/*
+files/images/*
+files/videos/*
+!files/.gitkeep
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3

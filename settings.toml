@@ -1,0 +1,77 @@
+# PythonDL 配置文件
+
+[default]
+# 应用配置
+[app]
+name = "PythonDL"
+version = "1.0.0"
+debug = false
+
+# 服务器配置
+[server]
+host = "0.0.0.0"
+port = 8000
+workers = 4
+
+# 数据库配置
+[database]
+host = "127.0.0.1"
+port = 3306
+user = "python"
+password = "123456"
+name = "py_demo"
+echo = false
+
+# 缓存配置
+[cache]
+dir = "runtimes/cache"
+ttl = 3600
+
+# 日志配置
+[log]
+dir = "logs"
+level = "INFO"
+retention_days = 30
+
+# 文件存储配置
+[data]
+dir = "data"
+
+[temp]
+dir = "temps"
+
+[files]
+dir = "files"
+export_dir = "files/exports"
+images_dir = "files/images"
+videos_dir = "files/videos"
+
+# 安全配置
+[security]
+secret_key = "your-secret-key-change-in-production"
+session_expire_hours = 24
+password_min_length = 6
+
+# API配置
+[api]
+prefix = "/api"
+docs_url = "/docs"
+redoc_url = "/redoc"
+
+# CORS配置
+[cors]
+origins = ["*"]
+allow_credentials = true
+allow_methods = ["*"]
+allow_headers = ["*"]
+
+[development]
+app.debug = true
+database.echo = true
+log.level = "DEBUG"
+
+[production]
+app.debug = false
+database.echo = false
+log.level = "INFO"
+server.workers = 8
