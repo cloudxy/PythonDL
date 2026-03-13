@@ -75,3 +75,4 @@ logs/*
 .lingma/
 .idea/
 data/*
+/logs/*
