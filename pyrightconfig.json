@@ -1,0 +1,23 @@
+{
+  "reportMissingTypeStubs": "none",
+  "reportUnknownParameterType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportMissingTypeAnnotation": "none",
+  "reportIncompatibleVariableType": "none",
+  "reportAssignmentType": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportCallIssue": "none",
+  "reportReturnType": "none",
+  "reportOptionalSubscript": "none",
+  "reportUnboundVariable": "none",
+  "reportInvalidTypeForm": "none",
+  "typeCheckingMode": "off",
+  "useLibraryCodeForTypes": true,
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.*"
+  ]
+}

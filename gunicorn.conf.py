@@ -1,42 +1,47 @@
-# Gunicorn配置文件
+# Gunicorn 配置文件
 
-# 绑定地址和端口
-bind = '0.0.0.0:8000'
+import multiprocessing
+import os
+
+# 服务器绑定
+bind = f"127.0.0.1:8009"
 
 # 工作进程数
-workers = 4
+workers = multiprocessing.cpu_count() * 2 + 1
+worker_class = "uvicorn.workers.UvicornWorker"
+worker_connections = 1000
 
-# 工作进程类型
-worker_class = 'uvicorn.workers.UvicornWorker'
+# 进程命名
+proc_name = "pythondl"
 
-# 工作进程超时时间
+# 超时设置
 timeout = 120
-
-# 最大请求数
-timeout = 120
-
-# 最大请求数
-max_requests = 10000
-max_requests_jitter = 1000
+keepalive = 5
 
 # 日志配置
-accesslog = './logs/gunicorn/access.log'
-errorlog = './logs/gunicorn/error.log'
-loglevel = 'info'
+accesslog = "logs/gunicorn/access.log"
+errorlog = "logs/gunicorn/error.log"
+loglevel = "info"
 
-# 进程名称
-proc_name = 'PythonDL'
+# 访问日志格式
+access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s'
 
-# 启动时的环境变量
-env = {
-    'PYTHONDL_ENV': 'production'
-}
+# 进程 ID 文件
+pidfile = "runtimes/gunicorn.pid"
 
-# 预加载应用
-preload_app = True
-
-# 后台运行
+# 守护进程
 daemon = False
 
-# 重启信号
-graceful_timeout = 30
+# 工作目录
+chdir = os.path.dirname(os.path.abspath(__file__))
+
+# 最大请求数
+max_requests = 1000
+max_requests_jitter = 50
+
+# 临时目录
+tmp_upload_dir = "/tmp"
+
+# 用户和组
+# user = "www-data"
+# group = "www-data"

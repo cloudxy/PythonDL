@@ -16,11 +16,11 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(50), unique=True, index=True, nullable=False, comment="用户名")
     email = Column(String(100), unique=True, index=True, nullable=False, comment="邮箱")
-    password_hash = Column(String(255), nullable=False, comment="密码哈希")
+    password = Column(String(100), nullable=False, comment="密码")
     real_name = Column(String(50), nullable=True, comment="真实姓名")
     phone = Column(String(20), nullable=True, comment="手机号")
-    avatar = Column(String(255), nullable=True, comment="头像URL")
-    role_id = Column(Integer, ForeignKey("roles.id"), nullable=True, comment="角色ID")
+    avatar = Column(String(255), nullable=True, comment="头像 URL")
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=True, comment="角色 ID")
     is_active = Column(Boolean, default=True, comment="是否激活")
     is_superuser = Column(Boolean, default=False, comment="是否超级管理员")
     last_login = Column(DateTime, nullable=True, comment="最后登录时间")
@@ -29,6 +29,8 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, comment="更新时间")
     
     role = relationship("Role", back_populates="users")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    notification_settings = relationship("NotificationSetting", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"

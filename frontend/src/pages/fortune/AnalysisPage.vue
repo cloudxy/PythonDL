@@ -1,73 +1,233 @@
 <template>
   <div class="space-y-6">
-    <PageHeader title="综合分析" subtitle="命理综合分析" />
+    <PageHeader title="综合分析" subtitle="综合运势分析系统">
+      <template #actions>
+        <Button variant="primary" @click="startAnalysis">
+          <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          开始分析
+        </Button>
+      </template>
+    </PageHeader>
 
-    <Breadcrumb :items="[{ label: '看相算命' }, { label: '综合分析' }]" />
+    <Breadcrumb :items="[
+      { label: '看相算命' },
+      { label: '综合分析' }
+    ]" />
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- 输入表单 -->
-      <Card title="分析配置" class="lg:col-span-1">
-        <FormSection>
-          <Input v-model="form.name" label="姓名" required />
-          <RadioCard v-model="form.gender" label="性别" :options="genderOptions" />
-          <DatePicker v-model="form.birthDate" label="出生日期" />
-          <Input v-model="form.birthTime" label="出生时辰" />
-          <Select v-model="form.analysisType" label="分析类型" :options="analysisOptions" />
-        </FormSection>
-        <template #footer>
-          <Button variant="primary" block :loading="analyzing" @click="runAnalysis">开始分析</Button>
+      <!-- 左侧：输入区域 -->
+      <Card class="lg:col-span-1">
+        <template #header>
+          <h3 class="text-lg font-semibold">分析参数</h3>
         </template>
+        <div class="space-y-4">
+          <Input v-model="form.name" label="姓名" placeholder="请输入姓名" />
+          <Select
+            v-model="form.gender"
+            label="性别"
+            :options="genderOptions"
+            placeholder="请选择性别"
+          />
+          <Input
+            v-model="form.birthdate"
+            label="出生日期"
+            type="date"
+            placeholder="请选择出生日期"
+          />
+          <Input
+            v-model="form.birthtime"
+            label="出生时间"
+            type="time"
+            placeholder="请选择出生时间"
+          />
+          <Select
+            v-model="form.zodiac"
+            label="生肖"
+            :options="zodiacOptions"
+            placeholder="请选择生肖"
+          />
+          <Select
+            v-model="form.constellation"
+            label="星座"
+            :options="constellationOptions"
+            placeholder="请选择星座"
+          />
+          <Button variant="primary" block @click="analyze">
+            开始分析
+          </Button>
+        </div>
       </Card>
 
-      <!-- 分析结果 -->
+      <!-- 右侧：分析结果 -->
       <div class="lg:col-span-2 space-y-6">
-        <Card v-if="analysisResult" title="分析结果">
-          <Tabs v-model="activeTab" :tabs="resultTabs" />
-          
-          <div v-show="activeTab === 'overview'" class="mt-6 space-y-4">
-            <div class="grid grid-cols-4 gap-4">
-              <div class="text-center p-4 bg-primary-50 rounded-lg">
-                <p class="text-sm text-secondary-500">综合评分</p>
-                <p class="text-3xl font-bold text-primary-600">{{ analysisResult.score }}</p>
-              </div>
-              <div class="text-center p-4 bg-success-50 rounded-lg">
-                <p class="text-sm text-secondary-500">事业运</p>
-                <p class="text-3xl font-bold text-success-600">{{ analysisResult.career }}</p>
-              </div>
-              <div class="text-center p-4 bg-warning-50 rounded-lg">
-                <p class="text-sm text-secondary-500">财运</p>
-                <p class="text-3xl font-bold text-warning-600">{{ analysisResult.wealth }}</p>
-              </div>
-              <div class="text-center p-4 bg-danger-50 rounded-lg">
-                <p class="text-sm text-secondary-500">感情运</p>
-                <p class="text-3xl font-bold text-danger-600">{{ analysisResult.love }}</p>
+        <!-- 总体运势 -->
+        <Card>
+          <template #header>
+            <h3 class="text-lg font-semibold">总体运势</h3>
+          </template>
+          <div class="flex items-center gap-6">
+            <div class="relative w-32 h-32">
+              <svg class="w-32 h-32 transform -rotate-90">
+                <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="16" fill="none" />
+                <circle
+                  cx="64"
+                  cy="64"
+                  r="56"
+                  stroke="#10b981"
+                  stroke-width="16"
+                  fill="none"
+                  stroke-dasharray="351.86"
+                  stroke-dashoffset="351.86 * 0.25"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-2xl font-bold">75</span>
               </div>
             </div>
-            <div>
-              <h4 class="font-semibold mb-2">综合评语</h4>
-              <p class="text-secondary-600">{{ analysisResult.summary }}</p>
+            <div class="flex-1">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-sm text-secondary-500">事业运</p>
+                  <div class="flex items-center gap-2">
+                    <div class="flex-1 h-2 bg-secondary-200 rounded-full overflow-hidden">
+                      <div class="h-full bg-primary-500 rounded-full" style="width: 80%"></div>
+                    </div>
+                    <span class="text-sm font-medium">80</span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-sm text-secondary-500">财运</p>
+                  <div class="flex items-center gap-2">
+                    <div class="flex-1 h-2 bg-secondary-200 rounded-full overflow-hidden">
+                      <div class="h-full bg-warning-500 rounded-full" style="width: 65%"></div>
+                    </div>
+                    <span class="text-sm font-medium">65</span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-sm text-secondary-500">健康运</p>
+                  <div class="flex items-center gap-2">
+                    <div class="flex-1 h-2 bg-secondary-200 rounded-full overflow-hidden">
+                      <div class="h-full bg-success-500 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <span class="text-sm font-medium">85</span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-sm text-secondary-500">感情运</p>
+                  <div class="flex items-center gap-2">
+                    <div class="flex-1 h-2 bg-secondary-200 rounded-full overflow-hidden">
+                      <div class="h-full bg-danger-500 rounded-full" style="width: 55%"></div>
+                    </div>
+                    <span class="text-sm font-medium">55</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div v-show="activeTab === 'career'" class="mt-6">
-            <h4 class="font-semibold mb-3">事业分析</h4>
-            <p class="text-secondary-600">{{ analysisResult.careerAnalysis }}</p>
-          </div>
-
-          <div v-show="activeTab === 'wealth'" class="mt-6">
-            <h4 class="font-semibold mb-3">财运分析</h4>
-            <p class="text-secondary-600">{{ analysisResult.wealthAnalysis }}</p>
-          </div>
-
-          <div v-show="activeTab === 'love'" class="mt-6">
-            <h4 class="font-semibold mb-3">感情分析</h4>
-            <p class="text-secondary-600">{{ analysisResult.loveAnalysis }}</p>
           </div>
         </Card>
 
-        <Card v-else title="分析结果">
-          <div class="h-64 flex items-center justify-center text-secondary-400">
-            <p>请填写信息并开始分析</p>
+        <!-- 八字分析 -->
+        <Card>
+          <template #header>
+            <h3 class="text-lg font-semibold">八字分析</h3>
+          </template>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="text-center p-4 bg-secondary-50 rounded-lg">
+              <p class="text-sm text-secondary-500 mb-1">年柱</p>
+              <p class="text-xl font-bold text-secondary-900">甲子</p>
+            </div>
+            <div class="text-center p-4 bg-secondary-50 rounded-lg">
+              <p class="text-sm text-secondary-500 mb-1">月柱</p>
+              <p class="text-xl font-bold text-secondary-900">乙丑</p>
+            </div>
+            <div class="text-center p-4 bg-secondary-50 rounded-lg">
+              <p class="text-sm text-secondary-500 mb-1">日柱</p>
+              <p class="text-xl font-bold text-secondary-900">丙寅</p>
+            </div>
+            <div class="text-center p-4 bg-secondary-50 rounded-lg">
+              <p class="text-sm text-secondary-500 mb-1">时柱</p>
+              <p class="text-xl font-bold text-secondary-900">丁卯</p>
+            </div>
+          </div>
+        </Card>
+
+        <!-- 五行分析 -->
+        <Card>
+          <template #header>
+            <h3 class="text-lg font-semibold">五行分析</h3>
+          </template>
+          <div class="flex items-center gap-4">
+            <div class="flex-1 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 text-sm">金</span>
+                <div class="flex-1 h-3 bg-secondary-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-yellow-500 rounded-full" style="width: 40%"></div>
+                </div>
+                <span class="text-sm w-8">40%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-8 text-sm">木</span>
+                <div class="flex-1 h-3 bg-secondary-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-green-500 rounded-full" style="width: 60%"></div>
+                </div>
+                <span class="text-sm w-8">60%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-8 text-sm">水</span>
+                <div class="flex-1 h-3 bg-secondary-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-blue-500 rounded-full" style="width: 30%"></div>
+                </div>
+                <span class="text-sm w-8">30%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-8 text-sm">火</span>
+                <div class="flex-1 h-3 bg-secondary-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-red-500 rounded-full" style="width: 70%"></div>
+                </div>
+                <span class="text-sm w-8">70%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-8 text-sm">土</span>
+                <div class="flex-1 h-3 bg-secondary-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-orange-500 rounded-full" style="width: 50%"></div>
+                </div>
+                <span class="text-sm w-8">50%</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <!-- 运势建议 -->
+        <Card>
+          <template #header>
+            <h3 class="text-lg font-semibold">运势建议</h3>
+          </template>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="text-xl">💼</span>
+              <div>
+                <p class="font-medium">事业方面</p>
+                <p class="text-sm text-secondary-600">近期事业运势较好，适合拓展业务，但需注意细节处理。</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-xl">💰</span>
+              <div>
+                <p class="font-medium">财运方面</p>
+                <p class="text-sm text-secondary-600">财运平稳，不宜进行高风险投资，建议保守理财。</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-xl">❤️</span>
+              <div>
+                <p class="font-medium">感情方面</p>
+                <p class="text-sm text-secondary-600">感情运势一般，多与伴侣沟通，避免不必要的误会。</p>
+              </div>
+            </div>
           </div>
         </Card>
       </div>
@@ -82,37 +242,61 @@ import Breadcrumb from '@/components/ui/Breadcrumb.vue'
 import Card from '@/components/ui/Card.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
-import DatePicker from '@/components/ui/DatePicker.vue'
 import Select from '@/components/ui/Select.vue'
-import RadioCard from '@/components/ui/RadioCard.vue'
-import Tabs from '@/components/ui/Tabs.vue'
-import FormSection from '@/components/ui/FormSection.vue'
 
-const analyzing = ref(false)
-const analysisResult = ref(null)
-const activeTab = ref('overview')
+const form = reactive({
+  name: '',
+  gender: '',
+  birthdate: '',
+  birthtime: '',
+  zodiac: '',
+  constellation: ''
+})
 
-const form = reactive({ name: '', gender: 'male', birthDate: '', birthTime: '', analysisType: 'comprehensive' })
-const genderOptions = [{ value: 'male', label: '男' }, { value: 'female', label: '女' }]
-const analysisOptions = [{ value: 'comprehensive', label: '综合分析' }, { value: 'career', label: '事业分析' }, { value: 'wealth', label: '财运分析' }]
-const resultTabs = [{ value: 'overview', label: '综合概览' }, { value: 'career', label: '事业' }, { value: 'wealth', label: '财运' }, { value: 'love', label: '感情' }]
+const genderOptions = [
+  { value: 'male', label: '男' },
+  { value: 'female', label: '女' }
+]
 
-const runAnalysis = async () => {
-  analyzing.value = true
-  try {
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    analysisResult.value = {
-      score: 85,
-      career: 90,
-      wealth: 80,
-      love: 85,
-      summary: '整体运势良好，事业有成的机会较大，财运稳定，感情生活和谐。建议把握机会，稳中求进。',
-      careerAnalysis: '事业方面有贵人相助，适合开展新项目或寻求晋升机会。注意与同事的沟通协作。',
-      wealthAnalysis: '财运平稳，正财收入稳定，偏财运一般。建议稳健投资，避免高风险操作。',
-      loveAnalysis: '感情运势良好，单身者有机会遇到心仪对象，已婚者家庭和睦。'
-    }
-  } finally {
-    analyzing.value = false
+const zodiacOptions = [
+  { value: 'rat', label: '鼠' },
+  { value: 'ox', label: '牛' },
+  { value: 'tiger', label: '虎' },
+  { value: 'rabbit', label: '兔' },
+  { value: 'dragon', label: '龙' },
+  { value: 'snake', label: '蛇' },
+  { value: 'horse', label: '马' },
+  { value: 'goat', label: '羊' },
+  { value: 'monkey', label: '猴' },
+  { value: 'rooster', label: '鸡' },
+  { value: 'dog', label: '狗' },
+  { value: 'pig', label: '猪' }
+]
+
+const constellationOptions = [
+  { value: 'aries', label: '白羊座' },
+  { value: 'taurus', label: '金牛座' },
+  { value: 'gemini', label: '双子座' },
+  { value: 'cancer', label: '巨蟹座' },
+  { value: 'leo', label: '狮子座' },
+  { value: 'virgo', label: '处女座' },
+  { value: 'libra', label: '天秤座' },
+  { value: 'scorpio', label: '天蝎座' },
+  { value: 'sagittarius', label: '射手座' },
+  { value: 'capricorn', label: '摩羯座' },
+  { value: 'aquarius', label: '水瓶座' },
+  { value: 'pisces', label: '双鱼座' }
+]
+
+const startAnalysis = () => {
+  alert('请填写完整的分析参数')
+}
+
+const analyze = () => {
+  if (!form.name || !form.birthdate) {
+    alert('请填写姓名和出生日期')
+    return
   }
+  alert('分析完成！')
 }
 </script>
