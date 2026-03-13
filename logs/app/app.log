@@ -1,34 +1,320 @@
-2026-03-07 12:01:34,740 - app - INFO - __init__.py:20 - Application startup
-2026-03-07 12:01:34,740 - app - INFO - __init__.py:21 - API documentation available at /docs
-2026-03-07 12:01:34,740 - app - INFO - __init__.py:22 - Static files mounted at /static
-2026-03-07 12:04:04,949 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8000/api/v1/auth/login
-2026-03-07 12:04:04,985 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
-2026-03-07 12:04:04,985 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 422 - Time: 4.48ms
-2026-03-07 12:04:04,985 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8000/api/v1/auth/login - 422 in 0.0368s
-2026-03-07 12:04:15,009 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8000/api/v1/auth/login
-2026-03-07 12:04:15,011 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
-2026-03-07 12:04:15,012 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 422 - Time: 2.83ms
-2026-03-07 12:04:15,012 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8000/api/v1/auth/login - 422 in 0.0032s
-2026-03-07 12:04:17,475 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8000/api/v1/auth/login
-2026-03-07 12:04:17,477 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
-2026-03-07 12:04:17,477 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 422 - Time: 2.04ms
-2026-03-07 12:04:17,477 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8000/api/v1/auth/login - 422 in 0.0025s
-2026-03-07 12:04:22,784 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8000/api/v1/auth/login
-2026-03-07 12:04:22,801 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
-2026-03-07 12:04:22,807 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 422 - Time: 22.55ms
-2026-03-07 12:04:22,808 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8000/api/v1/auth/login - 422 in 0.0235s
-2026-03-07 12:04:49,409 - api_logging - INFO - logging.py:144 - Request started: GET http://localhost:8000/
-2026-03-07 12:04:49,414 - monitoring - INFO - monitoring.py:50 - GET / - Status: 200 - Time: 3.57ms
-2026-03-07 12:04:49,414 - api_logging - INFO - logging.py:150 - Request completed: GET http://localhost:8000/ - 200 in 0.0048s
-2026-03-07 12:04:49,617 - api_logging - INFO - logging.py:144 - Request started: GET http://localhost:8000/@vite/client
-2026-03-07 12:04:49,618 - app - INFO - __init__.py:142 - Successfully handled /@vite/client request
-2026-03-07 12:04:49,619 - monitoring - INFO - monitoring.py:50 - GET /@vite/client - Status: 200 - Time: 1.89ms
-2026-03-07 12:04:49,619 - api_logging - INFO - logging.py:150 - Request completed: GET http://localhost:8000/@vite/client - 200 in 0.0022s
-2026-03-07 12:04:56,187 - api_logging - INFO - logging.py:144 - Request started: GET http://localhost:8000/admin
-2026-03-07 12:04:56,189 - monitoring - INFO - monitoring.py:50 - GET /admin - Status: 404 - Time: 1.95ms
-2026-03-07 12:04:56,189 - api_logging - INFO - logging.py:150 - Request completed: GET http://localhost:8000/admin - 404 in 0.0023s
-2026-03-07 12:04:56,202 - api_logging - INFO - logging.py:144 - Request started: GET http://localhost:8000/@vite/client
-2026-03-07 12:04:56,203 - app - INFO - __init__.py:142 - Successfully handled /@vite/client request
-2026-03-07 12:04:56,204 - monitoring - INFO - monitoring.py:50 - GET /@vite/client - Status: 200 - Time: 1.56ms
-2026-03-07 12:04:56,204 - api_logging - INFO - logging.py:150 - Request completed: GET http://localhost:8000/@vite/client - 200 in 0.0019s
-2026-03-07 12:05:56,428 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8000/api/v1/auth/login
+2026-03-13 11:53:48,015 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.schemas
+2026-03-13 11:53:48,016 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.tables
+2026-03-13 11:53:48,016 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.types
+2026-03-13 11:53:48,016 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.constraints
+2026-03-13 11:53:48,016 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.defaults
+2026-03-13 11:53:48,016 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.comments
+2026-03-13 11:54:49,124 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.schemas
+2026-03-13 11:54:49,124 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.tables
+2026-03-13 11:54:49,125 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.types
+2026-03-13 11:54:49,125 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.constraints
+2026-03-13 11:54:49,125 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.defaults
+2026-03-13 11:54:49,125 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.comments
+2026-03-13 11:59:20,763 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.schemas
+2026-03-13 11:59:20,763 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.tables
+2026-03-13 11:59:20,763 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.types
+2026-03-13 11:59:20,763 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.constraints
+2026-03-13 11:59:20,763 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.defaults
+2026-03-13 11:59:20,763 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.comments
+2026-03-13 11:59:32,029 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.schemas
+2026-03-13 11:59:32,029 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.tables
+2026-03-13 11:59:32,029 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.types
+2026-03-13 11:59:32,029 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.constraints
+2026-03-13 11:59:32,029 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.defaults
+2026-03-13 11:59:32,029 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.comments
+2026-03-13 12:00:13,974 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.schemas
+2026-03-13 12:00:13,974 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.tables
+2026-03-13 12:00:13,974 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.types
+2026-03-13 12:00:13,974 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.constraints
+2026-03-13 12:00:13,974 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.defaults
+2026-03-13 12:00:13,974 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.comments
+2026-03-13 12:01:25,604 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.schemas
+2026-03-13 12:01:25,605 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.tables
+2026-03-13 12:01:25,605 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.types
+2026-03-13 12:01:25,605 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.constraints
+2026-03-13 12:01:25,605 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.defaults
+2026-03-13 12:01:25,605 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.comments
+2026-03-13 12:03:56,019 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.schemas
+2026-03-13 12:03:56,020 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.tables
+2026-03-13 12:03:56,020 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.types
+2026-03-13 12:03:56,020 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.constraints
+2026-03-13 12:03:56,020 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.defaults
+2026-03-13 12:03:56,020 - alembic.runtime.plugins - INFO - plugins.py:37 - setup plugin alembic.autogenerate.comments
+2026-03-13 12:58:04,157 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:58:04,158 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:58:04,158 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:19,526 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 12:59:45,312 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:45,313 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:45,313 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:45,871 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:45,871 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:45,872 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:45,936 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:45,937 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:45,937 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,045 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,045 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,046 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,375 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,376 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,376 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,376 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,378 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,378 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,451 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,451 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,451 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,454 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,455 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,455 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,470 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,471 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,471 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,551 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,552 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,552 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,571 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,572 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,572 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,583 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,584 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,585 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,588 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,589 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,589 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,590 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,590 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,591 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,595 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,596 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,597 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,600 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,601 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,602 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 12:59:46,621 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 12:59:46,622 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 12:59:46,622 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:00:38,616 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 13:00:38,819 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.password_hash' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-13 13:00:38,821 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 500 - Time: 191.71ms
+2026-03-13 13:00:38,821 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 500 in 0.2058s
+2026-03-13 13:00:52,126 - api_logging - INFO - logging.py:144 - Request started: GET http://127.0.0.1:8009/docs
+2026-03-13 13:00:52,141 - monitoring - INFO - monitoring.py:50 - GET /docs - Status: 200 - Time: 1.36ms
+2026-03-13 13:00:52,141 - api_logging - INFO - logging.py:150 - Request completed: GET http://127.0.0.1:8009/docs - 200 in 0.0156s
+2026-03-13 13:01:02,594 - api_logging - INFO - logging.py:144 - Request started: GET http://127.0.0.1:8009/
+2026-03-13 13:01:02,609 - monitoring - INFO - monitoring.py:50 - GET / - Status: 200 - Time: 2.96ms
+2026-03-13 13:01:02,610 - api_logging - INFO - logging.py:150 - Request completed: GET http://127.0.0.1:8009/ - 200 in 0.0157s
+2026-03-13 13:01:02,639 - api_logging - INFO - logging.py:144 - Request started: GET http://127.0.0.1:8009/@vite/client
+2026-03-13 13:01:02,640 - app - INFO - __init__.py:142 - Successfully handled /@vite/client request
+2026-03-13 13:01:02,641 - monitoring - INFO - monitoring.py:50 - GET /@vite/client - Status: 200 - Time: 1.28ms
+2026-03-13 13:01:02,641 - api_logging - INFO - logging.py:150 - Request completed: GET http://127.0.0.1:8009/@vite/client - 200 in 0.0021s
+2026-03-13 13:01:04,779 - api_logging - INFO - logging.py:144 - Request started: GET http://127.0.0.1:8009/docs
+2026-03-13 13:01:04,794 - monitoring - INFO - monitoring.py:50 - GET /docs - Status: 200 - Time: 1.28ms
+2026-03-13 13:01:04,795 - api_logging - INFO - logging.py:150 - Request completed: GET http://127.0.0.1:8009/docs - 200 in 0.0173s
+2026-03-13 13:03:29,873 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,878 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,879 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,893 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,893 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,894 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,897 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,898 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,900 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,900 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,903 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,903 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,906 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,906 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,908 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,911 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:29,909 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:03:34,839 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:34,840 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:34,841 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:35,395 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:35,396 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:35,397 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:35,696 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:35,697 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:35,697 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:35,817 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:35,818 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:35,819 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,061 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,062 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,062 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,121 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,121 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,122 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,165 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,165 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,166 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,185 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,185 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,186 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,282 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,283 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,283 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,307 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,307 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,308 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,330 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,330 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,331 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,335 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,336 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,337 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,376 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,377 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,378 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,411 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,411 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,411 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,424 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,425 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,425 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,466 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,467 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,467 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:03:36,470 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:03:36,471 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:03:36,471 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:39:59,834 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 13:39:59,921 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-13 13:39:59,923 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 500 - Time: 76.49ms
+2026-03-13 13:39:59,923 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 500 in 0.0893s
+2026-03-13 13:40:12,795 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 13:40:12,802 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-13 13:40:12,803 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 500 - Time: 5.66ms
+2026-03-13 13:40:12,803 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 500 in 0.0079s
+2026-03-13 13:52:33,549 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,549 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,554 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,554 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,553 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,555 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,615 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,615 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,632 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,632 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,642 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,645 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,645 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,645 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,645 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,645 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:33,645 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 13:52:42,811 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:42,813 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:42,814 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:42,895 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:42,896 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:42,896 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:43,721 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:43,723 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:43,723 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:43,773 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:43,774 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:43,775 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:43,796 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:43,798 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:43,799 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:43,812 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:43,813 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:43,814 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:43,848 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:43,849 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:43,850 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:43,873 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:43,873 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:43,874 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,069 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,070 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,070 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,080 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,081 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,081 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,107 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,108 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,108 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,111 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,112 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,112 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,130 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,131 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,131 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,131 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,131 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,131 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,131 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,132 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,132 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,158 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,159 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,159 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:52:44,197 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 13:52:44,198 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 13:52:44,198 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 13:53:59,128 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 13:53:59,168 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-13 13:53:59,169 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 500 - Time: 31.74ms
+2026-03-13 13:53:59,169 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 500 in 0.0414s
+2026-03-13 13:54:24,066 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 13:54:24,138 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-03-13 13:54:24,139 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 500 - Time: 55.79ms
+2026-03-13 13:54:24,140 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 500 in 0.0745s
+2026-03-13 13:56:33,709 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 13:56:33,720 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+2026-03-13 13:56:33,721 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 422 - Time: 10.5ms
+2026-03-13 13:56:33,721 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 422 in 0.0126s
+2026-03-13 13:57:02,255 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 13:57:02,531 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 200 - Time: 275.49ms
+2026-03-13 13:57:02,532 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 200 in 0.2766s
+2026-03-13 14:34:13,713 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,718 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,719 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,719 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,722 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,740 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,732 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,747 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,750 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,751 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,748 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,750 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,749 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,749 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,754 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,755 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:34:13,754 - app - INFO - __init__.py:25 - Application shutdown

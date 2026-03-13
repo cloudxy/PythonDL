@@ -1,26 +1,26 @@
-"""认证API路由
+"""认证 API 路由
 
-此模块定义认证相关的API接口。
+此模块定义认证相关的 API 接口。
 """
-from datetime import timedelta
+from typing import Any, Dict
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from typing import Dict, Any
 
 from app.core.database import get_db
 from app.core.auth import (
     create_access_token,
     create_refresh_token,
+    create_password_reset_token,
+    verify_password_reset_token,
     get_current_user,
     verify_token,
-    revoke_token
 )
 from app.core.security import verify_password, get_password_hash
-from app.core.cache import cache_manager
+from app.core.pydantic_utils import from_orm
 from app.models.admin.user import User
 from app.schemas.auth import (
-    UserLogin,
     UserCreate,
     UserResponse,
     TokenResponse,
@@ -36,7 +36,7 @@ router = APIRouter()
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
-):
+) -> TokenResponse:
     """用户登录"""
     user_service = UserService(db)
     user = user_service.get_user_by_username(form_data.username)
@@ -47,11 +47,13 @@ async def login(
             detail="用户名或密码错误"
         )
     
-    if not verify_password(form_data.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="用户名或密码错误"
-        )
+    password = user.password
+    if isinstance(password, str):
+        if not verify_password(form_data.password, password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="用户名或密码错误"
+            )
     
     if not user.is_active:
         raise HTTPException(
@@ -79,7 +81,7 @@ async def login(
 async def register(
     user_data: UserCreate,
     db: Session = Depends(get_db)
-):
+) -> UserResponse:
     """用户注册"""
     user_service = UserService(db)
     
@@ -102,14 +104,14 @@ async def register(
         real_name=user_data.real_name
     )
     
-    return UserResponse.from_orm(user)
+    return from_orm(UserResponse, user)
 
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(
     refresh_token: str,
     db: Session = Depends(get_db)
-):
+) -> TokenResponse:
     """刷新令牌"""
     payload = verify_token(refresh_token)
     
@@ -119,7 +121,13 @@ async def refresh_token(
             detail="无效的刷新令牌"
         )
     
-    user_id = payload.get("sub")
+    user_id: Any = payload.get("sub")
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="无效的刷新令牌"
+        )
+    
     user_service = UserService(db)
     user = user_service.get_user(int(user_id))
     
@@ -144,7 +152,7 @@ async def refresh_token(
 
 
 @router.post("/logout")
-async def logout(current_user: User = Depends(get_current_user)):
+async def logout(current_user: User = Depends(get_current_user)) -> Dict[str, str]:
     """用户登出"""
     return {"message": "登出成功"}
 
@@ -153,13 +161,15 @@ async def logout(current_user: User = Depends(get_current_user)):
 async def forgot_password(
     request: PasswordResetRequest,
     db: Session = Depends(get_db)
-):
-    """忘记密码"""
+) -> Dict[str, str]:
+    """忘记密码 - 生成重置令牌"""
     user_service = UserService(db)
     user = user_service.get_user_by_email(request.email)
     
     if user:
-        pass
+        token = create_password_reset_token(
+            data={"sub": str(user.id), "email": user.email}
+        )
     
     return {"message": "如果邮箱存在，重置邮件已发送"}
 
@@ -168,18 +178,33 @@ async def forgot_password(
 async def reset_password(
     reset_data: PasswordReset,
     db: Session = Depends(get_db)
-):
-    """重置密码"""
-    user_service = UserService(db)
-    user = user_service.get_user_by_email(reset_data.email)
+) -> Dict[str, str]:
+    """重置密码 - 使用令牌验证"""
+    payload = verify_password_reset_token(reset_data.token)
     
-    if not user:
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="无效或已过期的重置令牌"
+        )
+    
+    user_id: Any = payload.get("sub")
+    if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="无效的重置请求"
         )
     
-    user.password_hash = get_password_hash(reset_data.new_password)
+    user_service = UserService(db)
+    user = user_service.get_user(int(user_id))
+    
+    if not user or user.email != reset_data.email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="无效的重置请求"
+        )
+    
+    user.password = get_password_hash(reset_data.new_password)
     db.commit()
     
     return {"message": "密码重置成功"}
@@ -188,6 +213,6 @@ async def reset_password(
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(
     current_user: User = Depends(get_current_user)
-):
+) -> UserResponse:
     """获取当前用户信息"""
-    return UserResponse.from_orm(current_user)
+    return from_orm(UserResponse, current_user)

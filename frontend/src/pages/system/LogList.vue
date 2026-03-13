@@ -1,6 +1,21 @@
 <template>
   <div class="space-y-6">
-    <PageHeader title="操作日志" subtitle="查看系统操作记录" />
+    <PageHeader title="操作日志" subtitle="查看系统操作记录">
+      <template #actions>
+        <Button variant="outline" @click="handleExport">
+          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          导出日志
+        </Button>
+        <Button variant="danger" @click="handleClear">
+          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          清理日志
+        </Button>
+      </template>
+    </PageHeader>
 
     <Breadcrumb :items="[
       { label: '系统管理' },
@@ -8,31 +23,34 @@
     ]" />
 
     <Card>
-      <!-- 筛选条件 -->
-      <div class="flex flex-wrap items-center gap-4 mb-6">
-        <div class="flex-1 min-w-[200px]">
-          <Input v-model="filters.keyword" placeholder="搜索操作内容..." />
+      <div class="flex flex-col sm:flex-row gap-4 mb-4">
+        <SearchBar
+          v-model="searchQuery"
+          placeholder="搜索操作人、操作内容..."
+          @search="handleSearch"
+        />
+        <div class="flex gap-2">
+          <Select
+            v-model="filterType"
+            :options="typeOptions"
+            placeholder="操作类型"
+            class="w-32"
+            @change="handleSearch"
+          />
+          <Select
+            v-model="filterLevel"
+            :options="levelOptions"
+            placeholder="日志级别"
+            class="w-32"
+            @change="handleSearch"
+          />
+          <DatePicker
+            v-model="dateRange"
+            placeholder="日期范围"
+            is-range
+            @change="handleSearch"
+          />
         </div>
-        <Select
-          v-model="filters.module"
-          :options="moduleOptions"
-          placeholder="选择模块"
-        />
-        <Select
-          v-model="filters.action"
-          :options="actionOptions"
-          placeholder="选择操作"
-        />
-        <DatePicker v-model="filters.startDate" label="" placeholder="开始日期" />
-        <DatePicker v-model="filters.endDate" label="" placeholder="结束日期" />
-        <Button variant="primary" @click="handleSearch">搜索</Button>
-        <Button variant="secondary" @click="resetFilters">重置</Button>
-        <Button variant="secondary" @click="exportLogs">
-          <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          导出
-        </Button>
       </div>
 
       <Table
@@ -44,72 +62,84 @@
         :page-size="pageSize"
         @page-change="handlePageChange"
       >
-        <template #cell-module="{ row }">
-          <Badge :variant="getModuleVariant(row.module)">{{ row.module }}</Badge>
+        <template #cell-level="{ row }">
+          <Badge :variant="getLevelBadgeVariant(row.level)">
+            {{ levelMap[row.level] }}
+          </Badge>
         </template>
-        <template #cell-action="{ row }">
-          <Badge :variant="getActionVariant(row.action)">{{ row.action }}</Badge>
+        <template #cell-type="{ row }">
+          <Badge :variant="getTypeBadgeVariant(row.type)">
+            {{ typeMap[row.type] }}
+          </Badge>
         </template>
-        <template #cell-status="{ row }">
-          <StatusIndicator :status="row.status === 'success' ? 'success' : 'danger'" :text="row.status === 'success' ? '成功' : '失败'" />
+        <template #cell-duration="{ row }">
+          <span v-if="row.duration" class="text-secondary-600">{{ row.duration }}ms</span>
+          <span v-else class="text-secondary-400">-</span>
         </template>
         <template #cell-createdAt="{ row }">
           {{ formatDate(row.createdAt) }}
         </template>
         <template #actions="{ row }">
-          <Button variant="ghost" size="sm" @click="viewDetail(row)">详情</Button>
+          <div class="flex items-center justify-end gap-2">
+            <Button variant="ghost" size="sm" @click="viewDetail(row)">详情</Button>
+          </div>
         </template>
       </Table>
     </Card>
 
-    <!-- 详情模态框 -->
+    <!-- 日志详情模态框 -->
     <Modal
       v-model="showDetailModal"
       title="日志详情"
-      size="lg"
+      size="xl"
     >
       <div v-if="currentLog" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="text-sm text-secondary-500">操作用户</label>
+            <label class="text-sm text-secondary-500">操作人</label>
             <p class="font-medium">{{ currentLog.username }}</p>
           </div>
           <div>
-            <label class="text-sm text-secondary-500">操作模块</label>
-            <p class="font-medium">{{ currentLog.module }}</p>
+            <label class="text-sm text-secondary-500">操作类型</label>
+            <Badge :variant="getTypeBadgeVariant(currentLog.type)">
+              {{ typeMap[currentLog.type] }}
+            </Badge>
           </div>
           <div>
-            <label class="text-sm text-secondary-500">操作类型</label>
+            <label class="text-sm text-secondary-500">日志级别</label>
+            <Badge :variant="getLevelBadgeVariant(currentLog.level)">
+              {{ levelMap[currentLog.level] }}
+            </Badge>
+          </div>
+          <div>
+            <label class="text-sm text-secondary-500">耗时</label>
+            <p class="font-medium">{{ currentLog.duration || '-' }}ms</p>
+          </div>
+          <div class="col-span-2">
+            <label class="text-sm text-secondary-500">操作内容</label>
             <p class="font-medium">{{ currentLog.action }}</p>
           </div>
-          <div>
-            <label class="text-sm text-secondary-500">操作状态</label>
-            <StatusIndicator :status="currentLog.status === 'success' ? 'success' : 'danger'" :text="currentLog.status === 'success' ? '成功' : '失败'" />
+          <div class="col-span-2">
+            <label class="text-sm text-secondary-500">请求方法</label>
+            <Badge variant="secondary">{{ currentLog.method }}</Badge>
+            <span class="ml-2 text-secondary-600">{{ currentLog.url }}</span>
           </div>
-          <div>
-            <label class="text-sm text-secondary-500">IP地址</label>
+          <div class="col-span-2">
+            <label class="text-sm text-secondary-500">IP 地址</label>
             <p class="font-medium">{{ currentLog.ip }}</p>
           </div>
-          <div>
-            <label class="text-sm text-secondary-500">操作时间</label>
-            <p class="font-medium">{{ formatDate(currentLog.createdAt) }}</p>
+          <div class="col-span-2">
+            <label class="text-sm text-secondary-500">User Agent</label>
+            <p class="text-sm text-secondary-600 font-mono">{{ currentLog.userAgent }}</p>
           </div>
-        </div>
-        <div>
-          <label class="text-sm text-secondary-500">操作内容</label>
-          <p class="font-medium">{{ currentLog.content }}</p>
-        </div>
-        <div>
-          <label class="text-sm text-secondary-500">请求参数</label>
-          <pre class="mt-1 p-3 bg-secondary-50 rounded-lg text-sm overflow-auto">{{ currentLog.params }}</pre>
-        </div>
-        <div>
-          <label class="text-sm text-secondary-500">响应结果</label>
-          <pre class="mt-1 p-3 bg-secondary-50 rounded-lg text-sm overflow-auto">{{ currentLog.response }}</pre>
-        </div>
-        <div>
-          <label class="text-sm text-secondary-500">User-Agent</label>
-          <p class="text-sm text-secondary-600 break-all">{{ currentLog.userAgent }}</p>
+          <div v-if="currentLog.requestData" class="col-span-2">
+            <label class="text-sm text-secondary-500">请求数据</label>
+            <pre class="mt-1 p-3 bg-secondary-50 rounded-lg text-sm overflow-auto max-h-40">{{ JSON.stringify(currentLog.requestData, null, 2) }}</pre>
+          </div>
+          <div v-if="currentLog.responseData" class="col-span-2">
+            <label class="text-sm text-secondary-500">响应数据</label>
+            <pre class="mt-1 p-3 bg-secondary-50 rounded-lg text-sm overflow-auto max-h-40">{{ JSON.stringify(currentLog.responseData, null, 2) }}</pre>
+          </div>
         </div>
       </div>
     </Modal>
@@ -122,88 +152,112 @@ import PageHeader from '@/components/ui/PageHeader.vue'
 import Breadcrumb from '@/components/ui/Breadcrumb.vue'
 import Card from '@/components/ui/Card.vue'
 import Button from '@/components/ui/Button.vue'
-import Input from '@/components/ui/Input.vue'
 import Select from '@/components/ui/Select.vue'
-import DatePicker from '@/components/ui/DatePicker.vue'
 import Table from '@/components/ui/Table.vue'
 import Badge from '@/components/ui/Badge.vue'
 import Modal from '@/components/ui/Modal.vue'
-import StatusIndicator from '@/components/ui/StatusIndicator.vue'
+import SearchBar from '@/components/ui/SearchBar.vue'
+import DatePicker from '@/components/ui/DatePicker.vue'
 
 const loading = ref(false)
 const showDetailModal = ref(false)
-const currentLog = ref(null)
+const searchQuery = ref('')
+const filterType = ref('')
+const filterLevel = ref('')
+const dateRange = ref([])
 const page = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 
-const filters = reactive({
-  keyword: '',
-  module: '',
-  action: '',
-  startDate: '',
-  endDate: ''
-})
+const levelMap = {
+  info: '信息',
+  warning: '警告',
+  error: '错误',
+  debug: '调试'
+}
+
+const typeMap = {
+  login: '登录',
+  logout: '登出',
+  create: '创建',
+  update: '更新',
+  delete: '删除',
+  view: '查看',
+  export: '导出',
+  import: '导入',
+  other: '其他'
+}
 
 const columns = [
   { key: 'id', label: 'ID', width: '80px' },
-  { key: 'username', label: '操作用户' },
-  { key: 'module', label: '操作模块' },
-  { key: 'action', label: '操作类型' },
-  { key: 'content', label: '操作内容' },
-  { key: 'ip', label: 'IP地址' },
-  { key: 'status', label: '状态' },
+  { key: 'level', label: '级别' },
+  { key: 'username', label: '操作人' },
+  { key: 'type', label: '类型' },
+  { key: 'action', label: '操作内容', width: '300px' },
+  { key: 'ip', label: 'IP 地址' },
+  { key: 'duration', label: '耗时' },
   { key: 'createdAt', label: '操作时间' }
 ]
 
 const logs = ref([
-  { id: 1, username: 'admin', module: '用户管理', action: '登录', content: '用户登录系统', ip: '192.168.1.100', status: 'success', createdAt: '2024-01-15 10:30:00', params: '{}', response: '{}', userAgent: 'Mozilla/5.0...' },
-  { id: 2, username: 'admin', module: '用户管理', action: '新增', content: '新增用户：user1', ip: '192.168.1.100', status: 'success', createdAt: '2024-01-15 10:35:00', params: '{}', response: '{}', userAgent: 'Mozilla/5.0...' },
-  { id: 3, username: 'admin', module: '系统配置', action: '修改', content: '修改系统配置', ip: '192.168.1.100', status: 'success', createdAt: '2024-01-15 11:00:00', params: '{}', response: '{}', userAgent: 'Mozilla/5.0...' },
-  { id: 4, username: 'user1', module: '金融分析', action: '查询', content: '查询股票数据', ip: '192.168.1.101', status: 'success', createdAt: '2024-01-15 14:20:00', params: '{}', response: '{}', userAgent: 'Mozilla/5.0...' },
-  { id: 5, username: 'user1', module: '用户管理', action: '登录', content: '用户登录系统', ip: '192.168.1.101', status: 'failed', createdAt: '2024-01-15 14:15:00', params: '{}', response: '{}', userAgent: 'Mozilla/5.0...' }
+  { id: 1, level: 'info', type: 'login', username: 'admin', action: '登录系统', ip: '192.168.1.100', duration: 120, method: 'POST', url: '/api/v1/auth/login', createdAt: '2024-01-15 10:30:00' },
+  { id: 2, level: 'info', type: 'create', username: 'admin', action: '创建用户 test', ip: '192.168.1.100', duration: 250, method: 'POST', url: '/api/v1/admin/users', createdAt: '2024-01-15 10:35:00' },
+  { id: 3, level: 'warning', type: 'update', username: 'user1', action: '更新配置信息', ip: '192.168.1.101', duration: 180, method: 'PUT', url: '/api/v1/admin/configs/1', createdAt: '2024-01-15 11:00:00' },
+  { id: 4, level: 'error', type: 'delete', username: 'admin', action: '删除角色失败 - 权限不足', ip: '192.168.1.100', duration: 50, method: 'DELETE', url: '/api/v1/admin/roles/1', createdAt: '2024-01-15 11:15:00' },
+  { id: 5, level: 'info', type: 'export', username: 'user2', action: '导出股票数据', ip: '192.168.1.102', duration: 3500, method: 'GET', url: '/api/v1/finance/stocks/export', createdAt: '2024-01-15 11:30:00' }
 ])
 
-const moduleOptions = [
-  { value: 'user', label: '用户管理' },
-  { value: 'role', label: '角色管理' },
-  { value: 'config', label: '系统配置' },
-  { value: 'finance', label: '金融分析' },
-  { value: 'weather', label: '气象分析' }
+const typeOptions = [
+  { value: '', label: '全部类型' },
+  { value: 'login', label: '登录' },
+  { value: 'logout', label: '登出' },
+  { value: 'create', label: '创建' },
+  { value: 'update', label: '更新' },
+  { value: 'delete', label: '删除' },
+  { value: 'view', label: '查看' },
+  { value: 'export', label: '导出' },
+  { value: 'import', label: '导入' },
+  { value: 'other', label: '其他' }
 ]
 
-const actionOptions = [
-  { value: 'login', label: '登录' },
-  { value: 'create', label: '新增' },
-  { value: 'update', label: '修改' },
-  { value: 'delete', label: '删除' },
-  { value: 'query', label: '查询' }
+const levelOptions = [
+  { value: '', label: '全部级别' },
+  { value: 'info', label: '信息' },
+  { value: 'warning', label: '警告' },
+  { value: 'error', label: '错误' },
+  { value: 'debug', label: '调试' }
 ]
+
+const currentLog = ref(null)
 
 const formatDate = (date) => {
   if (!date) return '-'
   return new Date(date).toLocaleString('zh-CN')
 }
 
-const getModuleVariant = (module) => {
+const getLevelBadgeVariant = (level) => {
   const variants = {
-    '用户管理': 'primary',
-    '角色管理': 'success',
-    '系统配置': 'warning',
-    '金融分析': 'danger'
+    info: 'primary',
+    warning: 'warning',
+    error: 'danger',
+    debug: 'secondary'
   }
-  return variants[module] || 'secondary'
+  return variants[level] || 'secondary'
 }
 
-const getActionVariant = (action) => {
+const getTypeBadgeVariant = (type) => {
   const variants = {
-    '登录': 'primary',
-    '新增': 'success',
-    '修改': 'warning',
-    '删除': 'danger',
-    '查询': 'secondary'
+    login: 'success',
+    logout: 'secondary',
+    create: 'primary',
+    update: 'warning',
+    delete: 'danger',
+    view: 'info',
+    export: 'success',
+    import: 'success',
+    other: 'secondary'
   }
-  return variants[action] || 'secondary'
+  return variants[type] || 'secondary'
 }
 
 const handleSearch = () => {
@@ -211,19 +265,9 @@ const handleSearch = () => {
   loadLogs()
 }
 
-const resetFilters = () => {
-  Object.assign(filters, {
-    keyword: '',
-    module: '',
-    action: '',
-    startDate: '',
-    endDate: ''
-  })
-  handleSearch()
-}
-
-const handlePageChange = ({ page: newPage }) => {
+const handlePageChange = ({ page: newPage, pageSize: newSize }) => {
   page.value = newPage
+  pageSize.value = newSize
   loadLogs()
 }
 
@@ -238,12 +282,23 @@ const loadLogs = async () => {
 }
 
 const viewDetail = (log) => {
-  currentLog.value = log
+  currentLog.value = {
+    ...log,
+    requestData: { username: 'admin' },
+    responseData: { code: 200, message: 'success' },
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+  }
   showDetailModal.value = true
 }
 
-const exportLogs = () => {
-  alert('日志导出中...')
+const handleExport = () => {
+  alert('正在导出日志...')
+}
+
+const handleClear = () => {
+  if (confirm('确定要清理 30 天前的日志吗？')) {
+    alert('日志已清理')
+  }
 }
 
 onMounted(() => {

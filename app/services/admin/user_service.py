@@ -5,7 +5,6 @@
 from typing import List, Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
 
 from app.models.admin.user import User
 from app.core.security import get_password_hash
@@ -52,57 +51,73 @@ class UserService:
         role_id: Optional[int] = None
     ) -> User:
         """创建用户"""
-        user = User(
-            username=username,
-            email=email,
-            password_hash=get_password_hash(password),
-            real_name=real_name,
-            role_id=role_id
-        )
-        self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
-        return user
+        try:
+            user = User(
+                username=username,
+                email=email,
+                password=get_password_hash(password),
+                real_name=real_name,
+                role_id=role_id
+            )
+            self.db.add(user)
+            self.db.commit()
+            self.db.refresh(user)
+            return user
+        except Exception:
+            self.db.rollback()
+            raise
     
     def update_user(self, user_id: int, data: dict) -> Optional[User]:
         """更新用户"""
-        user = self.get_user(user_id)
-        if not user:
-            return None
-        
-        for key, value in data.items():
-            if hasattr(user, key) and value is not None:
-                setattr(user, key, value)
-        
-        self.db.commit()
-        self.db.refresh(user)
-        return user
+        try:
+            user = self.get_user(user_id)
+            if not user:
+                return None
+            
+            for key, value in data.items():
+                if hasattr(user, key) and value is not None:
+                    setattr(user, key, value)
+            
+            self.db.commit()
+            self.db.refresh(user)
+            return user
+        except Exception:
+            self.db.rollback()
+            raise
     
     def delete_user(self, user_id: int) -> bool:
         """删除用户"""
-        user = self.get_user(user_id)
-        if not user:
-            return False
-        
-        self.db.delete(user)
-        self.db.commit()
-        return True
+        try:
+            user = self.get_user(user_id)
+            if not user:
+                return False
+            
+            self.db.delete(user)
+            self.db.commit()
+            return True
+        except Exception:
+            self.db.rollback()
+            raise
     
     def update_last_login(self, user_id: int) -> bool:
         """更新最后登录时间"""
-        user = self.get_user(user_id)
-        if not user:
-            return False
-        
-        user.last_login = datetime.utcnow()
-        user.login_count = (user.login_count or 0) + 1
-        self.db.commit()
-        return True
+        try:
+            user = self.get_user(user_id)
+            if not user:
+                return False
+            
+            user.last_login = datetime.utcnow()  # type: ignore
+            user.login_count = (user.login_count or 0) + 1  # type: ignore
+            self.db.commit()
+            return True
+        except Exception:
+            self.db.rollback()
+            raise
+    
+    def count_active_users(self) -> int:
+        """统计活跃用户数"""
+        return self.db.query(User).filter(User.is_active.is_(True)).count()
     
     def count_users(self) -> int:
         """统计用户总数"""
         return self.db.query(User).count()
-    
-    def count_active_users(self) -> int:
-        """统计活跃用户数"""
-        return self.db.query(User).filter(User.is_active == True).count()

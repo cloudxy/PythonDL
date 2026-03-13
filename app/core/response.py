@@ -1,9 +1,45 @@
-"""API响应模块
+"""API 响应模块
 
-此模块提供统一的API响应格式。
+此模块提供统一的 API 响应格式。
 """
 from typing import Any, Optional, Dict
 from pydantic import BaseModel
+
+
+def success_response(data: Any = None, message: str = "操作成功") -> Dict[str, Any]:
+    """成功响应函数（兼容旧代码）
+    
+    Args:
+        data: 响应数据
+        message: 响应消息
+        
+    Returns:
+        Dict[str, Any]: 响应字典
+    """
+    return {
+        "success": True,
+        "data": data,
+        "message": message
+    }
+
+
+def error_response(message: str = "操作失败", code: int = 400, data: Any = None) -> Dict[str, Any]:
+    """错误响应函数（兼容旧代码）
+    
+    Args:
+        message: 错误消息
+        code: 错误码
+        data: 附加数据
+        
+    Returns:
+        Dict[str, Any]: 响应字典
+    """
+    return {
+        "success": False,
+        "data": data,
+        "message": message,
+        "code": code
+    }
 
 
 class ApiResponse:

@@ -66,6 +66,15 @@ class Settings(BaseSettings):
     RATE_LIMIT_MAX_REQUESTS: int = 1000
     RATE_LIMIT_WINDOW_SECONDS: int = 60
     
+    SMTP_HOST: str = "smtp.qq.com"
+    SMTP_PORT: int = 465
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    FROM_EMAIL: str = ""
+    FROM_NAME: str = "PythonDL"
+    SMTP_USE_TLS: bool = True
+    FRONTEND_URL: str = "http://localhost:3000"
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -274,6 +283,38 @@ class Config:
     @property
     def RATE_LIMIT_WINDOW_SECONDS(self) -> int:
         return settings.get("rate_limit.window_seconds", 60)
+    
+    @property
+    def SMTP_HOST(self) -> str:
+        return settings.get("smtp.host", "smtp.qq.com")
+    
+    @property
+    def SMTP_PORT(self) -> int:
+        return settings.get("smtp.port", 465)
+    
+    @property
+    def SMTP_USER(self) -> str:
+        return settings.get("smtp.user", "")
+    
+    @property
+    def SMTP_PASSWORD(self) -> str:
+        return settings.get("smtp.password", "")
+    
+    @property
+    def FROM_EMAIL(self) -> str:
+        return settings.get("smtp.from_email", "")
+    
+    @property
+    def FROM_NAME(self) -> str:
+        return settings.get("smtp.from_name", "PythonDL")
+    
+    @property
+    def SMTP_USE_TLS(self) -> bool:
+        return settings.get("smtp.use_tls", True)
+    
+    @property
+    def FRONTEND_URL(self) -> str:
+        return settings.get("frontend.url", "http://localhost:3000")
 
 
 config = Config()

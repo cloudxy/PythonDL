@@ -1,211 +1,357 @@
 <template>
   <div class="space-y-6">
-    <PageHeader title="风险评估" subtitle="股票投资风险评估分析" />
+    <PageHeader title="风险评估" subtitle="股票投资风险智能评估">
+      <template #actions>
+        <Button variant="primary" @click="showCreateModal = true">
+          <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          新建评估
+        </Button>
+      </template>
+    </PageHeader>
 
     <Breadcrumb :items="[
       { label: '金融分析' },
       { label: '风险评估' }
     ]" />
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- 左侧：评估配置 -->
-      <Card title="风险评估配置" class="lg:col-span-1">
-        <FormSection>
-          <Select
-            v-model="assessForm.stockId"
-            label="选择股票"
-            :options="stockOptions"
-            placeholder="请选择股票"
-            required
-          />
-          <Select
-            v-model="assessForm.method"
-            label="评估方法"
-            :options="methodOptions"
-          />
-          <Input
-            v-model="assessForm.investment"
-            type="number"
-            label="投资金额"
-            hint="用于计算风险敞口"
-          />
-        </FormSection>
+    <Card>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <StatCard title="总评估数" value="24" icon="📊" trend="+12%" />
+        <StatCard title="高风险" value="3" icon="⚠️" trend="-5%" trend-negative />
+        <StatCard title="中风险" value="8" icon="⚡" trend="+2%" />
+        <StatCard title="低风险" value="13" icon="✅" trend="+8%" />
+      </div>
 
-        <template #footer>
-          <Button variant="primary" block :loading="assessing" @click="runAssessment">
-            开始评估
-          </Button>
+      <Table :columns="columns" :data="assessments" :loading="loading">
+        <template #cell-riskLevel="{ row }">
+          <Badge :variant="getRiskBadgeVariant(row.riskLevel)">
+            {{ riskLevelMap[row.riskLevel] }}
+          </Badge>
         </template>
-      </Card>
-
-      <!-- 右侧：评估结果 -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- 风险概览 -->
-        <Card v-if="assessmentResult" title="风险概览">
-          <div class="grid grid-cols-4 gap-4 mb-6">
-            <div class="text-center">
-              <CircleProgress :value="assessmentResult.riskScore" :max="100" color="danger" />
-              <p class="text-sm text-secondary-500 mt-2">风险评分</p>
-            </div>
-            <div class="text-center">
-              <CircleProgress :value="assessmentResult.volatility" :max="100" color="warning" />
-              <p class="text-sm text-secondary-500 mt-2">波动率</p>
-            </div>
-            <div class="text-center">
-              <CircleProgress :value="assessmentResult.liquidity" :max="100" color="primary" />
-              <p class="text-sm text-secondary-500 mt-2">流动性</p>
-            </div>
-            <div class="text-center">
-              <CircleProgress :value="assessmentResult.marketRisk" :max="100" color="danger" />
-              <p class="text-sm text-secondary-500 mt-2">市场风险</p>
+        <template #cell-score="{ row }">
+          <div class="flex items-center gap-2">
+            <span class="font-medium">{{ row.score }}</span>
+            <div class="w-24 h-2 bg-secondary-200 rounded-full overflow-hidden">
+              <div
+                :class="getScoreColorClass(row.score)"
+                class="h-full rounded-full"
+                :style="{ width: row.score + '%' }"
+              ></div>
             </div>
           </div>
+        </template>
+        <template #cell-factors="{ row }">
+          <div class="flex flex-wrap gap-1">
+            <Badge v-for="factor in row.factors" :key="factor" variant="secondary" size="sm">
+              {{ factor }}
+            </Badge>
+          </div>
+        </template>
+        <template #cell-createdAt="{ row }">
+          {{ formatDate(row.createdAt) }}
+        </template>
+        <template #actions="{ row }">
+          <div class="flex items-center justify-end gap-2">
+            <Button variant="ghost" size="sm" @click="viewReport(row)">报告</Button>
+            <Button variant="ghost" size="sm" @click="runAssessment(row)">重评</Button>
+            <Button variant="danger" size="sm" @click="deleteAssessment(row)">删除</Button>
+          </div>
+        </template>
+      </Table>
+    </Card>
 
-          <div class="grid grid-cols-2 gap-6">
-            <div>
-              <h4 class="font-semibold mb-3">风险等级</h4>
-              <div class="flex items-center gap-3">
-                <Badge :variant="riskLevelVariant" size="lg">{{ assessmentResult.riskLevel }}</Badge>
-                <span class="text-secondary-500">{{ assessmentResult.riskDescription }}</span>
+    <!-- 新建评估模态框 -->
+    <Modal
+      v-model="showCreateModal"
+      title="新建风险评估"
+      size="lg"
+      :show-default-footer="true"
+      :loading="submitting"
+      @confirm="handleSubmit"
+    >
+      <FormSection title="评估配置">
+        <Select
+          v-model="assessmentForm.stockCode"
+          label="选择股票"
+          :options="stockOptions"
+          placeholder="请选择股票"
+          :error="formErrors.stockCode"
+          required
+        />
+        <Select
+          v-model="assessmentForm.type"
+          label="评估类型"
+          :options="typeOptions"
+          placeholder="请选择评估类型"
+          required
+        />
+        <Select
+          v-model="assessmentForm.model"
+          label="评估模型"
+          :options="modelOptions"
+          placeholder="请选择评估模型"
+          required
+        />
+      </FormSection>
+    </Modal>
+
+    <!-- 评估报告模态框 -->
+    <Modal
+      v-model="showReportModal"
+      title="风险评估报告"
+      size="xl"
+    >
+      <div v-if="currentAssessment" class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-xl font-semibold">{{ currentAssessment.stockName }}</h3>
+            <p class="text-secondary-500">{{ currentAssessment.stockCode }}</p>
+          </div>
+          <Badge :variant="getRiskBadgeVariant(currentAssessment.riskLevel)" size="lg">
+            {{ riskLevelMap[currentAssessment.riskLevel] }}
+          </Badge>
+        </div>
+
+        <div class="text-center py-6">
+          <div class="inline-block relative">
+            <svg class="w-32 h-32 transform -rotate-90">
+              <circle
+                cx="64"
+                cy="64"
+                r="56"
+                stroke="#e5e7eb"
+                stroke-width="16"
+                fill="none"
+              />
+              <circle
+                cx="64"
+                cy="64"
+                r="56"
+                :stroke="getScoreColor(currentAssessment.score)"
+                stroke-width="16"
+                fill="none"
+                :stroke-dasharray="351.86"
+                :stroke-dashoffset="351.86 * (1 - currentAssessment.score / 100)"
+                stroke-linecap="round"
+              />
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-2xl font-bold">{{ currentAssessment.score }}</span>
+            </div>
+          </div>
+          <p class="mt-2 text-secondary-500">风险评分</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="p-4 bg-secondary-50 rounded-lg">
+            <h4 class="font-semibold mb-2">市场风险</h4>
+            <div class="space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-secondary-500">波动率</span>
+                <span>{{ currentAssessment.marketVolatility }}%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-secondary-500">Beta 系数</span>
+                <span>{{ currentAssessment.beta }}</span>
               </div>
             </div>
-            <div>
-              <h4 class="font-semibold mb-3">投资建议</h4>
-              <p class="text-secondary-600">{{ assessmentResult.suggestion }}</p>
+          </div>
+          <div class="p-4 bg-secondary-50 rounded-lg">
+            <h4 class="font-semibold mb-2">财务风险</h4>
+            <div class="space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-secondary-500">负债率</span>
+                <span>{{ currentAssessment.debtRatio }}%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-secondary-500">流动比率</span>
+                <span>{{ currentAssessment.currentRatio }}</span>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <!-- 无评估结果提示 -->
-        <Card v-else title="风险评估结果">
-          <div class="h-64 flex items-center justify-center text-secondary-400">
-            <div class="text-center">
-              <svg class="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <p>请选择股票并开始评估</p>
-            </div>
+        <div>
+          <h4 class="font-semibold mb-2">风险因素</h4>
+          <div class="flex flex-wrap gap-2">
+            <Badge v-for="factor in currentAssessment.factors" :key="factor" variant="warning">
+              {{ factor }}
+            </Badge>
           </div>
-        </Card>
+        </div>
 
-        <!-- 详细风险指标 -->
-        <Card v-if="assessmentResult" title="详细风险指标">
-          <div class="space-y-4">
-            <ProgressBar label="VaR (95%)" :value="assessmentResult.var95" :max="100" color="danger" />
-            <ProgressBar label="最大回撤" :value="assessmentResult.maxDrawdown" :max="100" color="warning" />
-            <ProgressBar label="夏普比率" :value="assessmentResult.sharpeRatio * 20" :max="100" color="success" />
-            <ProgressBar label="Beta系数" :value="assessmentResult.beta * 50" :max="100" color="primary" />
-          </div>
-        </Card>
-
-        <!-- 历史评估记录 -->
-        <Card title="历史评估记录">
-          <Table
-            :columns="historyColumns"
-            :data="historyAssessments"
-            :show-pagination="false"
-          >
-            <template #cell-riskLevel="{ row }">
-              <Badge :variant="getRiskVariant(row.riskLevel)">{{ row.riskLevel }}</Badge>
-            </template>
-            <template #cell-createdAt="{ row }">
-              {{ formatDate(row.createdAt) }}
-            </template>
-          </Table>
-        </Card>
+        <div>
+          <h4 class="font-semibold mb-2">投资建议</h4>
+          <p class="text-secondary-700">{{ currentAssessment.recommendation }}</p>
+        </div>
       </div>
-    </div>
+    </Modal>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import Breadcrumb from '@/components/ui/Breadcrumb.vue'
 import Card from '@/components/ui/Card.vue'
 import Button from '@/components/ui/Button.vue'
-import Input from '@/components/ui/Input.vue'
 import Select from '@/components/ui/Select.vue'
 import Table from '@/components/ui/Table.vue'
 import Badge from '@/components/ui/Badge.vue'
-import ProgressBar from '@/components/ui/ProgressBar.vue'
-import CircleProgress from '@/components/ui/CircleProgress.vue'
+import Modal from '@/components/ui/Modal.vue'
 import FormSection from '@/components/ui/FormSection.vue'
+import StatCard from '@/components/ui/StatCard.vue'
 
-const assessing = ref(false)
-const assessmentResult = ref(null)
+const loading = ref(false)
+const submitting = ref(false)
+const showCreateModal = ref(false)
+const showReportModal = ref(false)
 
-const assessForm = reactive({
-  stockId: '',
-  method: 'monte_carlo',
-  investment: 100000
-})
+const riskLevelMap = {
+  low: '低风险',
+  medium: '中风险',
+  high: '高风险'
+}
 
-const stockOptions = [
-  { value: '1', label: '平安银行 (000001)' },
-  { value: '2', label: '万科A (000002)' },
-  { value: '3', label: '浦发银行 (600000)' }
-]
-
-const methodOptions = [
-  { value: 'monte_carlo', label: '蒙特卡洛模拟' },
-  { value: 'var', label: 'VaR风险价值' },
-  { value: 'cvar', label: 'CVaR条件风险价值' },
-  { value: 'stress_test', label: '压力测试' }
-]
-
-const historyColumns = [
-  { key: 'stockName', label: '股票' },
-  { key: 'method', label: '评估方法' },
-  { key: 'riskScore', label: '风险评分' },
+const columns = [
+  { key: 'stockCode', label: '股票代码' },
+  { key: 'stockName', label: '股票名称' },
   { key: 'riskLevel', label: '风险等级' },
+  { key: 'score', label: '风险评分' },
+  { key: 'factors', label: '风险因素', width: '300px' },
   { key: 'createdAt', label: '评估时间' }
 ]
 
-const historyAssessments = ref([
-  { id: 1, stockName: '平安银行', method: '蒙特卡洛模拟', riskScore: 35, riskLevel: '低风险', createdAt: '2024-01-14 10:00:00' },
-  { id: 2, stockName: '万科A', method: 'VaR风险价值', riskScore: 65, riskLevel: '中风险', createdAt: '2024-01-13 14:30:00' },
-  { id: 3, stockName: '浦发银行', method: '压力测试', riskScore: 45, riskLevel: '低风险', createdAt: '2024-01-12 09:15:00' }
+const assessments = ref([
+  { id: 1, stockCode: '000001', stockName: '平安银行', riskLevel: 'low', score: 25, factors: ['行业风险'], marketVolatility: 18.5, beta: 0.85, debtRatio: 45.2, currentRatio: 1.2, recommendation: '建议持有，风险可控', createdAt: '2024-01-15 10:30:00' },
+  { id: 2, stockCode: '000002', stockName: '万科 A', riskLevel: 'medium', score: 55, factors: ['政策风险', '市场风险'], marketVolatility: 25.3, beta: 1.15, debtRatio: 62.8, currentRatio: 0.9, recommendation: '谨慎关注，注意风险', createdAt: '2024-01-15 11:00:00' },
+  { id: 3, stockCode: '600000', stockName: '浦发银行', riskLevel: 'high', score: 78, factors: ['信用风险', '流动性风险', '市场风险'], marketVolatility: 32.1, beta: 1.35, debtRatio: 78.5, currentRatio: 0.75, recommendation: '风险较高，建议规避', createdAt: '2024-01-14 15:20:00' }
 ])
 
-const riskLevelVariant = computed(() => {
-  if (!assessmentResult.value) return 'secondary'
-  const level = assessmentResult.value.riskLevel
-  if (level === '高风险') return 'danger'
-  if (level === '中风险') return 'warning'
-  return 'success'
+const assessmentForm = reactive({
+  stockCode: '',
+  type: 'comprehensive',
+  model: 'ml'
 })
+
+const formErrors = reactive({
+  stockCode: ''
+})
+
+const stockOptions = [
+  { value: '000001', label: '000001 - 平安银行' },
+  { value: '000002', label: '000002 - 万科 A' },
+  { value: '600000', label: '600000 - 浦发银行' }
+]
+
+const typeOptions = [
+  { value: 'comprehensive', label: '综合评估' },
+  { value: 'market', label: '市场风险' },
+  { value: 'financial', label: '财务风险' },
+  { value: 'technical', label: '技术风险' }
+]
+
+const modelOptions = [
+  { value: 'ml', label: '机器学习模型' },
+  { value: 'var', label: 'VaR 模型' },
+  { value: 'montecarlo', label: '蒙特卡洛模拟' }
+]
+
+const currentAssessment = ref(null)
+
+const getRiskBadgeVariant = (level) => {
+  const variants = {
+    low: 'success',
+    medium: 'warning',
+    high: 'danger'
+  }
+  return variants[level] || 'secondary'
+}
+
+const getScoreColorClass = (score) => {
+  if (score < 40) return 'bg-success-500'
+  if (score < 70) return 'bg-warning-500'
+  return 'bg-danger-500'
+}
+
+const getScoreColor = (score) => {
+  if (score < 40) return '#10b981'
+  if (score < 70) return '#f59e0b'
+  return '#ef4444'
+}
 
 const formatDate = (date) => {
   if (!date) return '-'
   return new Date(date).toLocaleString('zh-CN')
 }
 
-const getRiskVariant = (level) => {
-  if (level === '高风险') return 'danger'
-  if (level === '中风险') return 'warning'
-  return 'success'
-}
-
-const runAssessment = async () => {
-  assessing.value = true
+const loadAssessments = async () => {
+  loading.value = true
   try {
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    assessmentResult.value = {
-      riskScore: 45,
-      volatility: 35,
-      liquidity: 80,
-      marketRisk: 40,
-      riskLevel: '低风险',
-      riskDescription: '该股票风险较低，适合稳健型投资者',
-      suggestion: '建议适度配置，注意分散投资风险',
-      var95: 15,
-      maxDrawdown: 25,
-      sharpeRatio: 1.8,
-      beta: 0.85
-    }
+    await new Promise(resolve => setTimeout(resolve, 500))
   } finally {
-    assessing.value = false
+    loading.value = false
   }
 }
+
+const runAssessment = async (item) => {
+  if (confirm(`确定要重新评估 ${item.stockName} 吗？`)) {
+    alert('评估已启动，请稍候查看结果')
+  }
+}
+
+const viewReport = (item) => {
+  currentAssessment.value = {
+    ...item,
+    marketVolatility: 25.3,
+    beta: 1.15,
+    debtRatio: 62.8,
+    currentRatio: 0.9
+  }
+  showReportModal.value = true
+}
+
+const deleteAssessment = async (item) => {
+  if (confirm(`确定要删除 ${item.stockName} 的评估记录吗？`)) {
+    assessments.value = assessments.value.filter(a => a.id !== item.id)
+  }
+}
+
+const handleSubmit = async () => {
+  submitting.value = true
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    const stock = stockOptions.find(s => s.value === assessmentForm.stockCode)
+    assessments.value.unshift({
+      id: Date.now(),
+      stockCode: assessmentForm.stockCode,
+      stockName: stock?.label.split(' - ')[1] || '',
+      riskLevel: 'medium',
+      score: 50,
+      factors: ['待评估'],
+      createdAt: new Date().toISOString()
+    })
+    showCreateModal.value = false
+    resetForm()
+  } finally {
+    submitting.value = false
+  }
+}
+
+const resetForm = () => {
+  Object.assign(assessmentForm, {
+    stockCode: '',
+    type: 'comprehensive',
+    model: 'ml'
+  })
+  Object.assign(formErrors, {
+    stockCode: ''
+  })
+}
+
+onMounted(() => {
+  loadAssessments()
+})
 </script>

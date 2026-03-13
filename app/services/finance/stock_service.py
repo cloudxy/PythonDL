@@ -2,114 +2,162 @@
 
 此模块提供股票相关的业务逻辑。
 """
-from typing import List, Optional
-from datetime import date
-from sqlalchemy.orm import Session
+from typing import List, Optional, Tuple
+from datetime import datetime, timedelta
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import and_, func, select
+import json
 
-from app.models.finance.stock_basic import StockBasic
 from app.models.finance.stock import Stock
+from app.models.finance.stock_basic import StockBasic
+from app.core.redis_client import redis_client
 
 
 class StockService:
     """股票服务类"""
     
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
+        self.redis = redis_client
+        self.cache_prefix = "stock:"
+        self.cache_ttl = 300  # 5 分钟缓存
     
-    def get_stock_basic(self, stock_id: int) -> Optional[StockBasic]:
-        """获取股票基础信息"""
-        return self.db.query(StockBasic).filter(StockBasic.id == stock_id).first()
-    
-    def get_stock_basic_by_code(self, ts_code: str) -> Optional[StockBasic]:
-        """通过TS代码获取股票基础信息"""
-        return self.db.query(StockBasic).filter(StockBasic.ts_code == ts_code).first()
-    
-    def get_stock_basics(
-        self,
-        skip: int = 0,
-        limit: int = 20,
-        symbol: Optional[str] = None,
-        industry: Optional[str] = None
-    ) -> List[StockBasic]:
-        """获取股票基础信息列表"""
-        query = self.db.query(StockBasic)
+    async def get_stock(self, stock_id: int) -> Optional[Stock]:
+        """获取股票"""
+        # 尝试从缓存获取
+        cache_key = f"{self.cache_prefix}id:{stock_id}"
+        cached = await self.redis.get(cache_key)
+        if cached:
+            return cached
         
-        if symbol:
-            query = query.filter(StockBasic.symbol.ilike(f"%{symbol}%"))
+        # 从数据库获取
+        result = await self.db.execute(
+            select(Stock).where(Stock.id == stock_id)
+        )
+        stock = result.scalar_one_or_none()
         
-        if industry:
-            query = query.filter(StockBasic.industry == industry)
+        # 写入缓存
+        if stock:
+            await self.redis.set(cache_key, stock.__dict__, expire=self.cache_ttl)
         
-        return query.offset(skip).limit(limit).all()
-    
-    def create_stock_basic(self, data: dict) -> StockBasic:
-        """创建股票基础信息"""
-        stock = StockBasic(**data)
-        self.db.add(stock)
-        self.db.commit()
-        self.db.refresh(stock)
         return stock
     
-    def update_stock_basic(self, stock_id: int, data: dict) -> Optional[StockBasic]:
-        """更新股票基础信息"""
-        stock = self.get_stock_basic(stock_id)
-        if not stock:
-            return None
+    async def get_stock_by_code(self, ts_code: str) -> Optional[Stock]:
+        """通过代码获取股票"""
+        # 尝试从缓存获取
+        cache_key = f"{self.cache_prefix}code:{ts_code}"
+        cached = await self.redis.get(cache_key)
+        if cached:
+            return cached
         
-        for key, value in data.items():
-            if hasattr(stock, key) and value is not None:
-                setattr(stock, key, value)
+        # 从数据库获取
+        result = await self.db.execute(
+            select(Stock).where(Stock.ts_code == ts_code)
+        )
+        stock = result.scalar_one_or_none()
         
-        self.db.commit()
-        self.db.refresh(stock)
+        # 写入缓存
+        if stock:
+            await self.redis.set(cache_key, stock.__dict__, expire=self.cache_ttl)
+        
         return stock
     
-    def delete_stock_basic(self, stock_id: int) -> bool:
-        """删除股票基础信息"""
-        stock = self.get_stock_basic(stock_id)
-        if not stock:
-            return False
-        
-        self.db.delete(stock)
-        self.db.commit()
-        return True
-    
-    def get_stock_data(
+    async def get_stocks(
         self,
-        skip: int = 0,
-        limit: int = 20,
+        page: int = 1,
+        page_size: int = 20,
         ts_code: Optional[str] = None,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None
-    ) -> List[Stock]:
-        """获取股票行情数据"""
-        query = self.db.query(Stock)
-        
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ) -> Tuple[List[Stock], int]:
+        """获取股票列表"""
+        # 构建查询条件
+        conditions = []
         if ts_code:
-            query = query.filter(Stock.ts_code == ts_code)
-        
+            conditions.append(Stock.ts_code.ilike(f"%{ts_code}%"))
         if start_date:
-            query = query.filter(Stock.trade_date >= start_date)
-        
+            conditions.append(Stock.trade_date >= start_date)
         if end_date:
-            query = query.filter(Stock.trade_date <= end_date)
+            conditions.append(Stock.trade_date <= end_date)
         
-        return query.order_by(Stock.trade_date.desc()).offset(skip).limit(limit).all()
+        # 查询总数
+        if conditions:
+            count_query = select(func.count()).select_from(Stock).where(and_(*conditions))
+        else:
+            count_query = select(func.count()).select_from(Stock)
+        
+        total_result = await self.db.execute(count_query)
+        total = total_result.scalar() or 0
+        
+        # 分页查询
+        query = select(Stock)
+        if conditions:
+            query = query.where(and_(*conditions))
+        query = query.order_by(Stock.trade_date.desc())
+        query = query.offset((page - 1) * page_size).limit(page_size)
+        
+        result = await self.db.execute(query)
+        stocks = result.scalars().all()
+        
+        return list(stocks), total
     
-    def create_stock_data(self, data: dict) -> Stock:
-        """创建股票行情数据"""
-        stock_data = Stock(**data)
-        self.db.add(stock_data)
-        self.db.commit()
-        self.db.refresh(stock_data)
-        return stock_data
+    def create_stock(self, data: dict) -> Stock:
+        """创建股票记录"""
+        try:
+            stock = Stock(**data)
+            self.db.add(stock)
+            self.db.commit()
+            self.db.refresh(stock)
+            return stock
+        except Exception:
+            self.db.rollback()
+            raise
     
-    def batch_create_stock_data(self, data_list: List[dict]) -> int:
-        """批量创建股票行情数据"""
-        count = 0
-        for data in data_list:
-            stock_data = Stock(**data)
-            self.db.add(stock_data)
-            count += 1
-        self.db.commit()
-        return count
+    def update_stock(self, stock_id: int, data: dict) -> Optional[Stock]:
+        """更新股票"""
+        try:
+            stock = self.get_stock(stock_id)
+            if not stock:
+                return None
+            
+            for key, value in data.items():
+                if hasattr(stock, key) and value is not None:
+                    setattr(stock, key, value)
+            
+            self.db.commit()
+            self.db.refresh(stock)
+            return stock
+        except Exception:
+            self.db.rollback()
+            raise
+    
+    def delete_stock(self, stock_id: int) -> bool:
+        """删除股票"""
+        try:
+            stock = self.get_stock(stock_id)
+            if not stock:
+                return False
+            
+            self.db.delete(stock)
+            self.db.commit()
+            return True
+        except Exception:
+            self.db.rollback()
+            raise
+    
+    def get_recent_stocks(self, ts_code: str, days: int = 30) -> List[Stock]:
+        """获取指定股票近 N 天的数据"""
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=days)
+        
+        return self.db.query(Stock).filter(
+            and_(
+                Stock.ts_code == ts_code,
+                Stock.trade_date >= start_date,
+                Stock.trade_date <= end_date
+            )
+        ).order_by(Stock.trade_date.desc()).all()
+    
+    def count_stocks(self) -> int:
+        """统计股票总数"""
+        return self.db.query(Stock).count()

@@ -1,7 +1,7 @@
 [project]
 name = "pythondl"
-version = "0.1.0"
-description = "PythonDL - 高级算法框架"
+version = "1.0.0"
+description = "PythonDL - 全栈智能分析平台"
 readme = "ReadMe.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -33,6 +33,11 @@ dependencies = [
     "python-jose[cryptography]>=3.3.0",
     "bcrypt>=4.0.0",
     "passlib>=1.7.4",
+    "jinja2>=3.1.0",
+    "python-dateutil>=2.8.0",
+    "aiofiles>=23.0.0",
+    "cryptography>=41.0.0",
+    "httpx>=0.25.0",
 ]
 
 [tool.poetry]

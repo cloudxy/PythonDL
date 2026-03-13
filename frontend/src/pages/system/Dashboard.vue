@@ -1,125 +1,101 @@
 <template>
   <div class="space-y-6">
-    <PageHeader title="仪表盘" subtitle="系统概览和关键指标" />
+    <PageHeader title="仪表盘" subtitle="欢迎使用 PythonDL 智能分析平台">
+      <template #actions>
+        <Button variant="outline" @click="loadDashboard">
+          <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          刷新
+        </Button>
+      </template>
+    </PageHeader>
+
+    <Breadcrumb :items="[
+      { label: '仪表盘' }
+    ]" />
 
     <!-- 统计卡片 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <StatCard
-        label="总用户数"
-        :value="stats.totalUsers"
-        :change="stats.userGrowth"
-        prefix=""
-        color="primary"
-      />
-      <StatCard
-        label="活跃用户"
-        :value="stats.activeUsers"
-        :change="stats.activeGrowth"
-        color="success"
-      />
-      <StatCard
-        label="今日访问"
-        :value="stats.todayVisits"
-        :change="stats.visitGrowth"
-        color="warning"
-      />
-      <StatCard
-        label="系统任务"
-        :value="stats.totalTasks"
-        :change="stats.taskGrowth"
-        color="danger"
-      />
+      <StatCard title="用户总数" value="1,234" icon="👥" trend="+12%" />
+      <StatCard title="股票数据" value="5,678" icon="📈" trend="+8%" />
+      <StatCard title="气象站点" value="342" icon="🌤️" trend="+5%" />
+      <StatCard title="采集任务" value="28" icon="🤖" trend="+15%" />
     </div>
 
     <!-- 图表区域 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- 访问趋势 -->
-      <Card title="访问趋势">
-        <div class="h-64 flex items-center justify-center text-secondary-400">
-          <div class="text-center">
-            <svg class="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-            </svg>
-            <p>访问趋势图表</p>
-            <p class="text-sm mt-1">集成 Chart.js 后显示</p>
-          </div>
+      <Card>
+        <template #header>
+          <h3 class="text-lg font-semibold">数据趋势</h3>
+        </template>
+        <div class="h-64 bg-secondary-50 rounded-lg flex items-center justify-center text-secondary-400">
+          <p>图表区域（集成图表库后显示）</p>
         </div>
       </Card>
 
-      <!-- 模块使用统计 -->
-      <Card title="模块使用统计">
+      <Card>
+        <template #header>
+          <h3 class="text-lg font-semibold">系统负载</h3>
+        </template>
         <div class="space-y-4">
-          <ProgressBar label="金融分析" :value="75" :max="100" color="primary" />
-          <ProgressBar label="气象分析" :value="60" :max="100" color="success" />
-          <ProgressBar label="消费分析" :value="45" :max="100" color="warning" />
-          <ProgressBar label="看相算命" :value="30" :max="100" color="danger" />
-          <ProgressBar label="爬虫采集" :value="20" :max="100" color="secondary" />
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-secondary-600">CPU 使用率</span>
+              <span class="text-sm font-medium">45%</span>
+            </div>
+            <div class="h-2 bg-secondary-200 rounded-full overflow-hidden">
+              <div class="h-full bg-primary-500 rounded-full" style="width: 45%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-secondary-600">内存使用率</span>
+              <span class="text-sm font-medium">62%</span>
+            </div>
+            <div class="h-2 bg-secondary-200 rounded-full overflow-hidden">
+              <div class="h-full bg-warning-500 rounded-full" style="width: 62%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-secondary-600">磁盘使用率</span>
+              <span class="text-sm font-medium">38%</span>
+            </div>
+            <div class="h-2 bg-secondary-200 rounded-full overflow-hidden">
+              <div class="h-full bg-success-500 rounded-full" style="width: 38%"></div>
+            </div>
+          </div>
         </div>
       </Card>
     </div>
 
-    <!-- 最近活动和系统状态 -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- 最近活动 -->
-      <ActivityList
-        title="最近活动"
-        :items="recentActivities"
-        show-more
-      />
+    <!-- 最近活动 -->
+    <Card>
+      <template #header>
+        <h3 class="text-lg font-semibold">最近活动</h3>
+      </template>
+      <Timeline :items="activities" />
+    </Card>
 
-      <!-- 系统状态 -->
-      <Card title="系统状态">
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-secondary-600">CPU 使用率</span>
-            <span class="text-sm font-medium text-secondary-900">45%</span>
-          </div>
-          <Progress :value="45" color="primary" />
-          
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-secondary-600">内存使用率</span>
-            <span class="text-sm font-medium text-secondary-900">68%</span>
-          </div>
-          <Progress :value="68" color="warning" />
-          
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-secondary-600">磁盘使用率</span>
-            <span class="text-sm font-medium text-secondary-900">35%</span>
-          </div>
-          <Progress :value="35" color="success" />
-        </div>
-      </Card>
-
-      <!-- 快捷操作 -->
-      <Card title="快捷操作">
-        <div class="grid grid-cols-2 gap-3">
-          <router-link to="/system/users" class="p-4 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors text-center">
-            <svg class="w-8 h-8 mx-auto text-primary-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span class="text-sm font-medium text-primary-700">用户管理</span>
-          </router-link>
-          <router-link to="/system/roles" class="p-4 bg-success-50 rounded-lg hover:bg-success-100 transition-colors text-center">
-            <svg class="w-8 h-8 mx-auto text-success-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            <span class="text-sm font-medium text-success-700">角色管理</span>
-          </router-link>
-          <router-link to="/system/config" class="p-4 bg-warning-50 rounded-lg hover:bg-warning-100 transition-colors text-center">
-            <svg class="w-8 h-8 mx-auto text-warning-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span class="text-sm font-medium text-warning-700">系统配置</span>
-          </router-link>
-          <router-link to="/crawler" class="p-4 bg-danger-50 rounded-lg hover:bg-danger-100 transition-colors text-center">
-            <svg class="w-8 h-8 mx-auto text-danger-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span class="text-sm font-medium text-danger-700">爬虫任务</span>
-          </router-link>
-        </div>
-      </Card>
+    <!-- 快捷入口 -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <router-link to="/finance/stocks" class="p-4 bg-white border border-secondary-200 rounded-lg hover:shadow-md transition-shadow text-center">
+        <div class="text-2xl mb-2">📈</div>
+        <div class="font-medium text-secondary-900">股票管理</div>
+      </router-link>
+      <router-link to="/weather/data" class="p-4 bg-white border border-secondary-200 rounded-lg hover:shadow-md transition-shadow text-center">
+        <div class="text-2xl mb-2">🌤️</div>
+        <div class="font-medium text-secondary-900">气象数据</div>
+      </router-link>
+      <router-link to="/fortune/analysis" class="p-4 bg-white border border-secondary-200 rounded-lg hover:shadow-md transition-shadow text-center">
+        <div class="text-2xl mb-2">🔮</div>
+        <div class="font-medium text-secondary-900">算命分析</div>
+      </router-link>
+      <router-link to="/crawler" class="p-4 bg-white border border-secondary-200 rounded-lg hover:shadow-md transition-shadow text-center">
+        <div class="text-2xl mb-2">🤖</div>
+        <div class="font-medium text-secondary-900">爬虫采集</div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -127,59 +103,30 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
-import StatCard from '@/components/ui/StatCard.vue'
+import Breadcrumb from '@/components/ui/Breadcrumb.vue'
 import Card from '@/components/ui/Card.vue'
-import Progress from '@/components/ui/Progress.vue'
-import ProgressBar from '@/components/ui/ProgressBar.vue'
-import ActivityList from '@/components/ui/ActivityList.vue'
+import Button from '@/components/ui/Button.vue'
+import StatCard from '@/components/ui/StatCard.vue'
+import Timeline from '@/components/ui/Timeline.vue'
 
-const stats = ref({
-  totalUsers: 1256,
-  userGrowth: 12.5,
-  activeUsers: 892,
-  activeGrowth: 8.3,
-  todayVisits: 3456,
-  visitGrowth: 15.2,
-  totalTasks: 48,
-  taskGrowth: -2.1
-})
+const loading = ref(false)
 
-const recentActivities = ref([
-  {
-    title: '用户登录',
-    description: '管理员登录系统',
-    time: '5分钟前',
-    icon: 'login',
-    iconBg: 'bg-primary-100',
-    iconClass: 'text-primary-600'
-  },
-  {
-    title: '数据同步',
-    description: '股票数据同步完成',
-    time: '15分钟前',
-    icon: 'sync',
-    iconBg: 'bg-success-100',
-    iconClass: 'text-success-600'
-  },
-  {
-    title: '系统警告',
-    description: '内存使用率超过80%',
-    time: '1小时前',
-    icon: 'warning',
-    iconBg: 'bg-warning-100',
-    iconClass: 'text-warning-600'
-  },
-  {
-    title: '任务完成',
-    description: '气象数据采集任务完成',
-    time: '2小时前',
-    icon: 'check',
-    iconBg: 'bg-success-100',
-    iconClass: 'text-success-600'
-  }
+const activities = ref([
+  { id: 1, time: '10:30', content: 'admin 登录了系统', icon: '🔐', type: 'success' },
+  { id: 2, time: '10:25', content: '股票数据采集完成，新增 150 条数据', icon: '📈', type: 'info' },
+  { id: 3, time: '10:20', content: '气象预测任务启动', icon: '🌤️', type: 'warning' },
+  { id: 4, time: '10:15', content: '用户 user1 创建了新的爬虫任务', icon: '🤖', type: 'info' },
+  { id: 5, time: '10:00', content: '系统定时备份完成', icon: '💾', type: 'success' }
 ])
 
+const loadDashboard = async () => {
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+  }, 1000)
+}
+
 onMounted(() => {
-  // 加载数据
+  loadDashboard()
 })
 </script>

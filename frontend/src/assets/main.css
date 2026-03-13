@@ -2,66 +2,273 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===================================
+   设计令牌系统 - Design Token System
+   =================================== */
+
+:root {
+  /* 颜色令牌 */
+  --color-primary-50: #eff6ff;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  
+  /* 间距基准 */
+  --spacing-unit: 0.25rem;
+  
+  /* 圆角 */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  
+  /* 过渡 */
+  --transition-base: all 0.2s ease;
+  --transition-slow: all 0.3s ease;
+}
+
 @layer base {
+  /* 基础 HTML 元素样式 */
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
     @apply bg-secondary-50 text-secondary-900 font-sans;
+    line-height: 1.6;
   }
 
-  * {
-    @apply border-secondary-200;
+  /* 链接样式 */
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors;
   }
 
-  /* Custom scrollbar */
+  /* 标题样式 */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-secondary-900 leading-tight;
+  }
+
+  h1 { @apply text-4xl; }
+  h2 { @apply text-3xl; }
+  h3 { @apply text-2xl; }
+  h4 { @apply text-xl; }
+  h5 { @apply text-lg; }
+  h6 { @apply text-base; }
+
+  /* 段落样式 */
+  p {
+    @apply text-secondary-600;
+  }
+
+  /* 代码样式 */
+  code {
+    @apply font-mono text-sm bg-secondary-100 px-1.5 py-0.5 rounded text-secondary-800;
+  }
+
+  /* 选中状态 */
+  ::selection {
+    @apply bg-primary-100 text-primary-900;
+  }
+
+  /* 自定义滚动条 */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-secondary-100 rounded-full;
+    @apply bg-secondary-100;
   }
 
   ::-webkit-scrollbar-thumb {
     @apply bg-secondary-300 rounded-full hover:bg-secondary-400 transition-colors;
   }
+
+  ::-webkit-scrollbar-corner {
+    @apply bg-secondary-100;
+  }
+
+  /* 聚焦环 */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  /* 输入框自动填充样式 */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    @apply text-secondary-900;
+  }
 }
 
 @layer components {
-  /* Form elements */
-  .form-input {
-    @apply w-full px-4 py-2.5 bg-white border border-secondary-300 rounded-lg
-           text-secondary-900 placeholder-secondary-400
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-           transition-all duration-200;
+  /* ===================================
+     按钮系统 - Button System
+     =================================== */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 
+           rounded-lg font-medium text-sm
+           transition-all duration-200 ease-in-out
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed
+           active:scale-[0.98];
   }
 
-  .form-input:disabled {
-    @apply bg-secondary-100 cursor-not-allowed;
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  .btn-xl {
+    @apply px-8 py-4 text-lg;
+  }
+
+  .btn-primary {
+    @apply btn bg-gradient-primary text-white 
+           hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5
+           focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary-100 text-secondary-700 
+           hover:bg-secondary-200 hover:text-secondary-900
+           focus:ring-secondary-500;
+  }
+
+  .btn-success {
+    @apply btn bg-gradient-success text-white 
+           hover:shadow-lg hover:shadow-success-500/30 hover:-translate-y-0.5
+           focus:ring-success-500;
+  }
+
+  .btn-warning {
+    @apply btn bg-gradient-warning text-white 
+           hover:shadow-lg hover:shadow-warning-500/30 hover:-translate-y-0.5
+           focus:ring-warning-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-gradient-danger text-white 
+           hover:shadow-lg hover:shadow-danger-500/30 hover:-translate-y-0.5
+           focus:ring-danger-500;
+  }
+
+  .btn-info {
+    @apply btn bg-gradient-to-r from-info-600 to-info-500 text-white 
+           hover:shadow-lg hover:shadow-info-500/30 hover:-translate-y-0.5
+           focus:ring-info-500;
+  }
+
+  .btn-astronomy {
+    @apply btn bg-gradient-astronomy text-white 
+           hover:shadow-lg hover:shadow-astronomy-500/30 hover:-translate-y-0.5
+           focus:ring-astronomy-500;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-secondary-600 
+           hover:bg-secondary-100 hover:text-secondary-900
+           focus:ring-secondary-500;
+  }
+
+  .btn-outline {
+    @apply btn bg-transparent border-2 border-primary-600 text-primary-600 
+           hover:bg-primary-50 hover:border-primary-700
+           focus:ring-primary-500;
+  }
+
+  .btn-block {
+    @apply w-full;
+  }
+
+  /* ===================================
+     表单系统 - Form System
+     =================================== */
+  .form-group {
+    @apply space-y-1.5;
   }
 
   .form-label {
-    @apply block text-sm font-medium text-secondary-700 mb-1.5;
+    @apply block text-sm font-medium text-secondary-700;
   }
 
-  .form-error {
-    @apply text-sm text-danger-600 mt-1;
+  .form-label-required::after {
+    @apply content-['*'] text-danger-500 ml-1;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-2.5 
+           bg-white border border-secondary-300 rounded-lg
+           text-secondary-900 placeholder-secondary-400
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           hover:border-secondary-400
+           disabled:bg-secondary-100 disabled:cursor-not-allowed;
+  }
+
+  .form-input-error {
+    @apply border-danger-500 focus:ring-danger-500;
+  }
+
+  .form-input-success {
+    @apply border-success-500 focus:ring-success-500;
   }
 
   .form-hint {
-    @apply text-sm text-secondary-500 mt-1;
+    @apply text-xs text-secondary-500;
   }
 
-  /* Card styles */
+  .form-error {
+    @apply text-xs text-danger-600 font-medium;
+  }
+
+  .form-textarea {
+    @apply form-input min-h-[100px] resize-y;
+  }
+
+  .form-select {
+    @apply form-input appearance-none bg-no-repeat bg-right-3 bg-center pr-10;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+
+  /* ===================================
+     卡片系统 - Card System
+     =================================== */
   .card {
-    @apply bg-white rounded-xl shadow-card border border-secondary-100 overflow-hidden;
+    @apply bg-white rounded-xl shadow-card border border-secondary-100 
+           transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-card-hover hover:-translate-y-0.5;
   }
 
   .card-header {
-    @apply px-6 py-4 border-b border-secondary-100 bg-secondary-50;
+    @apply px-6 py-4 border-b border-secondary-100 
+           bg-gradient-to-r from-secondary-50 to-white;
+  }
+
+  .card-title {
+    @apply text-lg font-semibold text-secondary-900;
+  }
+
+  .card-subtitle {
+    @apply text-sm text-secondary-500 mt-0.5;
   }
 
   .card-body {
@@ -69,81 +276,58 @@
   }
 
   .card-footer {
-    @apply px-6 py-4 border-t border-secondary-100 bg-secondary-50;
+    @apply px-6 py-4 border-t border-secondary-100 
+           bg-secondary-50 flex items-center justify-between;
   }
 
-  /* Table styles */
+  /* ===================================
+     表格系统 - Table System
+     =================================== */
+  .data-table-container {
+    @apply overflow-x-auto rounded-lg border border-secondary-200;
+  }
+
   .data-table {
-    @apply w-full;
+    @apply w-full text-left border-collapse;
   }
 
   .data-table thead {
-    @apply bg-secondary-50 border-b border-secondary-200;
+    @apply bg-gradient-to-r from-secondary-50 to-secondary-100 border-b border-secondary-200;
   }
 
   .data-table th {
-    @apply px-6 py-3 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider;
+    @apply px-6 py-3.5 text-xs font-semibold text-secondary-600 uppercase tracking-wider;
   }
 
   .data-table tbody {
-    @apply divide-y divide-secondary-100;
+    @apply divide-y divide-secondary-100 bg-white;
   }
 
   .data-table td {
     @apply px-6 py-4 text-sm text-secondary-900;
   }
 
-  .data-table tr:hover {
-    @apply bg-secondary-50;
+  .data-table tr {
+    @apply transition-colors hover:bg-primary-50/50;
   }
 
-  /* Button styles */
-  .btn {
-    @apply inline-flex items-center justify-center px-4 py-2.5 rounded-lg font-medium
-           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed;
+  .data-table tr:last-child td {
+    @apply border-b-0;
   }
 
-  .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  .data-table-striped tbody tr:nth-child(odd) {
+    @apply bg-secondary-50/50;
   }
 
-  .btn-secondary {
-    @apply btn bg-secondary-100 text-secondary-700 hover:bg-secondary-200 focus:ring-secondary-500;
+  .data-table-hover tbody tr:hover {
+    @apply bg-primary-50;
   }
 
-  .btn-success {
-    @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500;
-  }
-
-  .btn-warning {
-    @apply btn bg-warning-500 text-white hover:bg-warning-600 focus:ring-warning-500;
-  }
-
-  .btn-danger {
-    @apply btn bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500;
-  }
-
-  .btn-ghost {
-    @apply btn bg-transparent text-secondary-600 hover:bg-secondary-100 focus:ring-secondary-500;
-  }
-
-  .btn-outline {
-    @apply btn bg-transparent border-2 border-primary-600 text-primary-600
-           hover:bg-primary-50 focus:ring-primary-500;
-  }
-
-  .btn-sm {
-    @apply px-3 py-1.5 text-sm;
-  }
-
-  .btn-lg {
-    @apply px-6 py-3 text-lg;
-  }
-
-  /* Badge styles */
+  /* ===================================
+     徽章系统 - Badge System
+     =================================== */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
 
   .badge-primary {
@@ -162,26 +346,64 @@
     @apply badge bg-danger-100 text-danger-800;
   }
 
+  .badge-info {
+    @apply badge bg-info-100 text-info-800;
+  }
+
   .badge-secondary {
     @apply badge bg-secondary-100 text-secondary-800;
   }
 
-  /* Modal styles */
+  .badge-astronomy {
+    @apply badge bg-astronomy-100 text-astronomy-800;
+  }
+
+  .badge-dot {
+    @apply relative before:content-[''] before:absolute before:left-0 before:top-1/2 
+           before:-translate-y-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:mr-1.5;
+  }
+
+  .badge-dot-primary::before { @apply bg-primary-500; }
+  .badge-dot-success::before { @apply bg-success-500; }
+  .badge-dot-warning::before { @apply bg-warning-500; }
+  .badge-dot-danger::before { @apply bg-danger-500; }
+
+  /* ===================================
+     模态框系统 - Modal System
+     =================================== */
   .modal-overlay {
-    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50;
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50
+           transition-opacity duration-300;
   }
 
   .modal-container {
-    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4
+           overflow-y-auto;
   }
 
   .modal-content {
-    @apply bg-white rounded-2xl shadow-modal w-full max-w-lg max-h-[90vh] overflow-hidden
-           animate-scale-in;
+    @apply bg-white rounded-2xl shadow-modal w-full max-w-lg 
+           max-h-[90vh] overflow-hidden
+           transform transition-all duration-300
+           animate-scale-up;
+  }
+
+  .modal-content-lg {
+    @apply max-w-2xl;
+  }
+
+  .modal-content-xl {
+    @apply max-w-4xl;
   }
 
   .modal-header {
-    @apply px-6 py-4 border-b border-secondary-100;
+    @apply px-6 py-4 border-b border-secondary-100 
+           bg-gradient-to-r from-secondary-50 to-white
+           flex items-center justify-between;
+  }
+
+  .modal-title {
+    @apply text-lg font-semibold text-secondary-900;
   }
 
   .modal-body {
@@ -189,63 +411,136 @@
   }
 
   .modal-footer {
-    @apply px-6 py-4 border-t border-secondary-100 bg-secondary-50 flex justify-end gap-3;
+    @apply px-6 py-4 border-t border-secondary-100 
+           bg-secondary-50 flex justify-end gap-3;
   }
 
-  /* Sidebar styles */
-  .sidebar {
-    @apply fixed left-0 top-0 h-full w-64 bg-white border-r border-secondary-200
-           transform transition-transform duration-300 z-40;
-  }
-
-  .sidebar-item {
-    @apply flex items-center gap-3 px-4 py-3 text-secondary-600 hover:bg-primary-50
-           hover:text-primary-600 transition-colors cursor-pointer;
-  }
-
-  .sidebar-item.active {
-    @apply bg-primary-50 text-primary-600 border-r-2 border-primary-600;
-  }
-
-  /* Dropdown styles */
-  .dropdown {
-    @apply relative inline-block;
-  }
-
-  .dropdown-menu {
-    @apply absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-secondary-100
-           py-1 z-50 animate-slide-down;
-  }
-
-  .dropdown-item {
-    @apply block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50
-           hover:text-secondary-900 cursor-pointer;
-  }
-
-  /* Alert styles */
+  /* ===================================
+     警告提示系统 - Alert System
+     =================================== */
   .alert {
-    @apply p-4 rounded-lg flex items-start gap-3;
+    @apply p-4 rounded-lg flex items-start gap-3 border;
   }
 
   .alert-info {
-    @apply alert bg-primary-50 text-primary-800 border border-primary-200;
+    @apply alert bg-info-50 text-info-800 border-info-200;
   }
 
   .alert-success {
-    @apply alert bg-success-50 text-success-800 border border-success-200;
+    @apply alert bg-success-50 text-success-800 border-success-200;
   }
 
   .alert-warning {
-    @apply alert bg-warning-50 text-warning-800 border border-warning-200;
+    @apply alert bg-warning-50 text-warning-800 border-warning-200;
   }
 
   .alert-danger {
-    @apply alert bg-danger-50 text-danger-800 border border-danger-200;
+    @apply alert bg-danger-50 text-danger-800 border-danger-200;
   }
 
-  /* Stats card */
+  .alert-title {
+    @apply font-semibold mb-0.5;
+  }
+
+  .alert-description {
+    @apply text-sm opacity-90;
+  }
+
+  /* ===================================
+     侧边栏系统 - Sidebar System
+     =================================== */
+  .sidebar {
+    @apply fixed left-0 top-0 h-full w-64 
+           bg-white border-r border-secondary-200
+           transform transition-transform duration-300 z-40
+           flex flex-col;
+  }
+
+  .sidebar-header {
+    @apply h-16 flex items-center px-6 border-b border-secondary-200;
+  }
+
+  .sidebar-logo {
+    @apply w-8 h-8 bg-gradient-primary rounded-lg 
+           flex items-center justify-center;
+  }
+
+  .sidebar-nav {
+    @apply flex-1 overflow-y-auto py-4;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 
+           text-secondary-600 
+           hover:bg-primary-50 hover:text-primary-600 
+           transition-all duration-200 cursor-pointer
+           border-l-2 border-transparent;
+  }
+
+  .sidebar-item.active {
+    @apply bg-gradient-to-r from-primary-50 to-transparent 
+           text-primary-600 border-primary-600;
+  }
+
+  .sidebar-footer {
+    @apply border-t border-secondary-200 p-4;
+  }
+
+  /* ===================================
+     顶部导航系统 - Header System
+     =================================== */
+  .header {
+    @apply h-16 bg-white border-b border-secondary-200 
+           flex items-center justify-between px-4 lg:px-6 
+           sticky top-0 z-30;
+  }
+
+  .header-left {
+    @apply flex items-center gap-4;
+  }
+
+  .header-right {
+    @apply flex items-center gap-3;
+  }
+
+  .header-title {
+    @apply text-xl font-semibold text-secondary-900;
+  }
+
+  .header-icon-btn {
+    @apply p-2 text-secondary-500 hover:bg-secondary-100 hover:text-secondary-700 
+           rounded-lg transition-colors relative;
+  }
+
+  /* ===================================
+    统计卡片 - Stat Card
+     =================================== */
   .stat-card {
-    @apply card p-6;
+    @apply card p-6 hover:shadow-card-hover transition-all duration-200;
+  }
+
+  .stat-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .stat-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center;
+  }
+
+  .stat-icon-primary {
+    @apply stat-icon bg-primary-100 text-primary-600;
+  }
+
+  .stat-icon-success {
+    @apply stat-icon bg-success-100 text-success-600;
+  }
+
+  .stat-icon-warning {
+    @apply stat-icon bg-warning-100 text-warning-600;
+  }
+
+  .stat-icon-danger {
+    @apply stat-icon bg-danger-100 text-danger-600;
   }
 
   .stat-value {
@@ -257,28 +552,127 @@
   }
 
   .stat-change {
-    @apply text-sm font-medium mt-2;
+    @apply text-sm font-medium mt-3 flex items-center gap-1;
   }
 
-  .stat-change.positive {
+  .stat-change-positive {
     @apply text-success-600;
   }
 
-  .stat-change.negative {
+  .stat-change-negative {
     @apply text-danger-600;
   }
-}
 
-@layer utilities {
+  /* ===================================
+     加载状态 - Loading States
+     =================================== */
+  .loading {
+    @apply animate-spin;
+  }
+
+  .loading-dots {
+    @apply flex items-center gap-1;
+  }
+
+  .loading-dots span {
+    @apply w-2 h-2 bg-primary-500 rounded-full animate-bounce;
+  }
+
+  .loading-dots span:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .loading-dots span:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-secondary-200 rounded;
+  }
+
+  /* ===================================
+     工具类 - Utility Classes
+     =================================== */
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400;
   }
 
-  .bg-gradient-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-400;
+  .text-gradient-success {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-success-600 to-success-400;
   }
 
-  .bg-gradient-secondary {
-    @apply bg-gradient-to-r from-secondary-800 to-secondary-600;
+  .text-gradient-warning {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-warning-500 to-warning-400;
+  }
+
+  .text-gradient-danger {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-danger-600 to-danger-400;
+  }
+
+  .text-gradient-astronomy {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-astronomy-600 to-astronomy-400;
+  }
+
+  .bg-glass {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20;
+  }
+
+  .bg-glass-dark {
+    @apply bg-secondary-900/80 backdrop-blur-lg border border-secondary-700/20;
+  }
+
+  .divide-secondary {
+    @apply divide-y divide-secondary-100;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  /* 动画工具类 */
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  /* 网格布局 */
+  .grid-flow-col {
+    grid-auto-flow: column;
+  }
+
+  /* 文本截断 */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }

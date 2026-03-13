@@ -1,12 +1,48 @@
-2026-03-07 12:04:04,985 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+2026-03-13 13:00:38,819 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.password_hash' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password_hash AS users_password_hash, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
 Exception: None
 
-2026-03-07 12:04:15,011 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+2026-03-13 13:39:59,921 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
 Exception: None
 
-2026-03-07 12:04:17,477 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+2026-03-13 13:40:12,802 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
 Exception: None
 
-2026-03-07 12:04:22,801 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
+2026-03-13 13:53:59,168 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Exception: None
+
+2026-03-13 13:54:24,138 - app.core.exceptions - ERROR - exceptions.py:143 - Database error: (pymysql.err.OperationalError) (1054, "Unknown column 'users.real_name' in 'field list'")
+[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.real_name AS users_real_name, users.phone AS users_phone, users.avatar AS users_avatar, users.role_id AS users_role_id, users.is_active AS users_is_active, users.is_superuser AS users_is_superuser, users.last_login AS users_last_login, users.login_count AS users_login_count, users.created_at AS users_created_at, users.updated_at AS users_updated_at 
+FROM users 
+WHERE users.username = %(username_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'username_1': 'admin', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Exception: None
+
+2026-03-13 13:56:33,720 - app.core.exceptions - ERROR - exceptions.py:129 - Validation error: [{'field': 'body.username', 'message': 'Field required'}, {'field': 'body.password', 'message': 'Field required'}]
 Exception: None
 

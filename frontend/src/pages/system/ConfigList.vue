@@ -1,230 +1,288 @@
 <template>
   <div class="space-y-6">
-    <PageHeader title="系统配置" subtitle="管理系统全局配置项" />
+    <PageHeader title="系统配置" subtitle="管理系统运行参数">
+      <template #actions>
+        <Button variant="primary" @click="showAddModal = true">
+          <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          新增配置
+        </Button>
+      </template>
+    </PageHeader>
 
     <Breadcrumb :items="[
       { label: '系统管理' },
       { label: '系统配置' }
     ]" />
 
-    <!-- 配置分类标签 -->
-    <Tabs v-model="activeTab" :tabs="configTabs" />
+    <Card>
+      <SearchBar
+        v-model="searchQuery"
+        placeholder="搜索配置名称、键名..."
+        @search="handleSearch"
+        @add="showAddModal = true"
+      />
 
-    <!-- 基础配置 -->
-    <div v-show="activeTab === 'basic'">
-      <Card title="基础配置">
-        <FormSection title="网站信息" description="配置网站基本信息">
-          <Input v-model="config.siteName" label="网站名称" placeholder="请输入网站名称" />
-          <Input v-model="config.siteUrl" label="网站地址" placeholder="请输入网站地址" />
-          <Textarea v-model="config.siteDescription" label="网站描述" placeholder="请输入网站描述" />
-          <Input v-model="config.siteKeywords" label="SEO关键词" placeholder="多个关键词用逗号分隔" />
-        </FormSection>
-
-        <FormSection title="联系信息">
-          <Input v-model="config.contactEmail" label="联系邮箱" placeholder="请输入联系邮箱" />
-          <Input v-model="config.contactPhone" label="联系电话" placeholder="请输入联系电话" />
-          <Input v-model="config.contactAddress" label="联系地址" placeholder="请输入联系地址" />
-        </FormSection>
-
-        <template #footer>
-          <div class="flex justify-end">
-            <Button variant="primary" :loading="saving" @click="saveConfig">保存配置</Button>
+      <Table
+        :columns="columns"
+        :data="configs"
+        :loading="loading"
+        :total="total"
+        :page="page"
+        :page-size="pageSize"
+        @page-change="handlePageChange"
+      >
+        <template #cell-type="{ row }">
+          <Badge :variant="getTypeBadgeVariant(row.type)">
+            {{ typeMap[row.type] }}
+          </Badge>
+        </template>
+        <template #cell-status="{ row }">
+          <Badge :variant="row.status === 'active' ? 'success' : 'secondary'">
+            {{ row.status === 'active' ? '启用' : '禁用' }}
+          </Badge>
+        </template>
+        <template #cell-value="{ row }">
+          <span class="text-secondary-600">{{ displayValue(row) }}</span>
+        </template>
+        <template #actions="{ row }">
+          <div class="flex items-center justify-end gap-2">
+            <Button variant="ghost" size="sm" @click="editConfig(row)">编辑</Button>
+            <Button variant="danger" size="sm" @click="deleteConfig(row)">删除</Button>
           </div>
         </template>
-      </Card>
-    </div>
+      </Table>
+    </Card>
 
-    <!-- 邮件配置 -->
-    <div v-show="activeTab === 'email'">
-      <Card title="邮件配置">
-        <FormSection title="SMTP设置">
-          <Input v-model="config.smtpHost" label="SMTP服务器" placeholder="如：smtp.qq.com" />
-          <Input v-model="config.smtpPort" type="number" label="端口" placeholder="如：465" />
-          <Input v-model="config.smtpUser" label="用户名" placeholder="邮箱地址" />
-          <PasswordInput v-model="config.smtpPassword" label="密码" placeholder="邮箱密码或授权码" />
-          <Input v-model="config.smtpFrom" label="发件人" placeholder="发件人名称" />
-          <Select
-            v-model="config.smtpEncryption"
-            label="加密方式"
-            :options="encryptionOptions"
-          />
-        </FormSection>
-
-        <template #footer>
-          <div class="flex justify-end gap-3">
-            <Button variant="secondary" @click="testEmail">发送测试邮件</Button>
-            <Button variant="primary" :loading="saving" @click="saveConfig">保存配置</Button>
-          </div>
-        </template>
-      </Card>
-    </div>
-
-    <!-- 安全配置 -->
-    <div v-show="activeTab === 'security'">
-      <Card title="安全配置">
-        <FormSection title="登录设置">
-          <Input v-model="config.maxLoginAttempts" type="number" label="最大登录尝试次数" />
-          <Input v-model="config.loginLockTime" type="number" label="锁定时间(分钟)" />
-          <Input v-model="config.passwordMinLength" type="number" label="密码最小长度" />
-          <Toggle v-model="config.requireSpecialChar" label="要求特殊字符" />
-          <Toggle v-model="config.requireNumber" label="要求数字" />
-          <Toggle v-model="config.requireUppercase" label="要求大写字母" />
-        </FormSection>
-
-        <FormSection title="会话设置">
-          <Input v-model="config.sessionTimeout" type="number" label="会话超时时间(分钟)" />
-          <Toggle v-model="config.allowMultiLogin" label="允许多端登录" />
-        </FormSection>
-
-        <template #footer>
-          <div class="flex justify-end">
-            <Button variant="primary" :loading="saving" @click="saveConfig">保存配置</Button>
-          </div>
-        </template>
-      </Card>
-    </div>
-
-    <!-- 存储配置 -->
-    <div v-show="activeTab === 'storage'">
-      <Card title="存储配置">
-        <FormSection title="文件上传">
-          <Input v-model="config.maxFileSize" type="number" label="最大文件大小(MB)" />
-          <Input v-model="config.allowedFileTypes" label="允许的文件类型" placeholder="如：jpg,png,pdf" />
-          <Select
-            v-model="config.storageDriver"
-            label="存储方式"
-            :options="storageOptions"
-          />
-        </FormSection>
-
-        <FormSection title="OSS配置" v-if="config.storageDriver === 'oss'">
-          <Input v-model="config.ossEndpoint" label="Endpoint" />
-          <Input v-model="config.ossBucket" label="Bucket" />
-          <Input v-model="config.ossAccessKey" label="Access Key" />
-          <PasswordInput v-model="config.ossSecretKey" label="Secret Key" />
-        </FormSection>
-
-        <template #footer>
-          <div class="flex justify-end">
-            <Button variant="primary" :loading="saving" @click="saveConfig">保存配置</Button>
-          </div>
-        </template>
-      </Card>
-    </div>
-
-    <!-- API配置 -->
-    <div v-show="activeTab === 'api'">
-      <Card title="API配置">
-        <FormSection title="接口设置">
-          <Input v-model="config.apiRateLimit" type="number" label="API请求限制(次/分钟)" />
-          <Toggle v-model="config.apiLogEnabled" label="启用API日志" />
-          <Toggle v-model="config.apiCorsEnabled" label="启用CORS" />
-          <Input v-model="config.corsOrigins" label="允许的域名" placeholder="多个域名用逗号分隔" />
-        </FormSection>
-
-        <template #footer>
-          <div class="flex justify-end">
-            <Button variant="primary" :loading="saving" @click="saveConfig">保存配置</Button>
-          </div>
-        </template>
-      </Card>
-    </div>
+    <!-- 新增/编辑配置模态框 -->
+    <Modal
+      v-model="showAddModal"
+      :title="editingConfig ? '编辑配置' : '新增配置'"
+      size="lg"
+      :show-default-footer="true"
+      :loading="submitting"
+      @confirm="handleSubmit"
+    >
+      <FormSection title="基本信息">
+        <Input
+          v-model="configForm.name"
+          label="配置名称"
+          placeholder="请输入配置名称"
+          :error="formErrors.name"
+          required
+        />
+        <Input
+          v-model="configForm.key"
+          label="配置键名"
+          placeholder="请输入配置键名（如：site.name）"
+          :error="formErrors.key"
+          :disabled="!!editingConfig"
+          required
+        />
+        <Textarea
+          v-model="configForm.value"
+          label="配置值"
+          placeholder="请输入配置值"
+          :rows="3"
+          :error="formErrors.value"
+          required
+        />
+        <Select
+          v-model="configForm.type"
+          label="配置类型"
+          :options="typeOptions"
+          placeholder="请选择配置类型"
+          required
+        />
+        <Textarea
+          v-model="configForm.description"
+          label="配置描述"
+          placeholder="请输入配置描述"
+          :rows="2"
+        />
+        <Select
+          v-model="configForm.status"
+          label="状态"
+          :options="statusOptions"
+          placeholder="请选择状态"
+        />
+      </FormSection>
+    </Modal>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import Breadcrumb from '@/components/ui/Breadcrumb.vue'
 import Card from '@/components/ui/Card.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Textarea from '@/components/ui/Textarea.vue'
-import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Select from '@/components/ui/Select.vue'
-import Toggle from '@/components/ui/Toggle.vue'
-import Tabs from '@/components/ui/Tabs.vue'
+import Table from '@/components/ui/Table.vue'
+import Badge from '@/components/ui/Badge.vue'
+import Modal from '@/components/ui/Modal.vue'
 import FormSection from '@/components/ui/FormSection.vue'
+import SearchBar from '@/components/ui/SearchBar.vue'
 
-const activeTab = ref('basic')
-const saving = ref(false)
+const loading = ref(false)
+const submitting = ref(false)
+const showAddModal = ref(false)
+const editingConfig = ref(null)
+const searchQuery = ref('')
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 
-const configTabs = [
-  { value: 'basic', label: '基础配置' },
-  { value: 'email', label: '邮件配置' },
-  { value: 'security', label: '安全配置' },
-  { value: 'storage', label: '存储配置' },
-  { value: 'api', label: 'API配置' }
+const typeMap = {
+  string: '文本',
+  number: '数字',
+  boolean: '布尔',
+  json: 'JSON',
+  file: '文件'
+}
+
+const columns = [
+  { key: 'id', label: 'ID', width: '80px' },
+  { key: 'name', label: '配置名称' },
+  { key: 'key', label: '配置键名' },
+  { key: 'value', label: '配置值', width: '300px' },
+  { key: 'type', label: '类型' },
+  { key: 'description', label: '描述', width: '250px' },
+  { key: 'status', label: '状态' }
 ]
 
-const config = reactive({
-  // 基础配置
-  siteName: 'PythonDL 智能分析平台',
-  siteUrl: 'https://pythondl.example.com',
-  siteDescription: '集成多种功能模块的全栈智能分析平台',
-  siteKeywords: 'Python,数据分析,机器学习',
-  contactEmail: 'admin@example.com',
-  contactPhone: '400-123-4567',
-  contactAddress: '北京市海淀区',
+const configs = ref([
+  { id: 1, name: '网站名称', key: 'site.name', value: 'PythonDL 智能分析平台', type: 'string', description: '网站标题', status: 'active' },
+  { id: 2, name: '网站 Logo', key: 'site.logo', value: '/logo.png', type: 'file', description: '网站 Logo 地址', status: 'active' },
+  { id: 3, name: '最大上传文件大小', key: 'upload.max_size', value: '10', type: 'number', description: '单位：MB', status: 'active' },
+  { id: 4, name: '启用验证码', key: 'captcha.enabled', value: 'true', type: 'boolean', description: '登录时是否启用验证码', status: 'active' },
+  { id: 5, name: 'API 限流', key: 'api.rate_limit', value: '100', type: 'number', description: '每分钟请求数限制', status: 'active' }
+])
 
-  // 邮件配置
-  smtpHost: 'smtp.qq.com',
-  smtpPort: 465,
-  smtpUser: '',
-  smtpPassword: '',
-  smtpFrom: 'PythonDL',
-  smtpEncryption: 'ssl',
-
-  // 安全配置
-  maxLoginAttempts: 5,
-  loginLockTime: 30,
-  passwordMinLength: 8,
-  requireSpecialChar: true,
-  requireNumber: true,
-  requireUppercase: false,
-  sessionTimeout: 120,
-  allowMultiLogin: false,
-
-  // 存储配置
-  maxFileSize: 10,
-  allowedFileTypes: 'jpg,png,pdf,doc,docx',
-  storageDriver: 'local',
-  ossEndpoint: '',
-  ossBucket: '',
-  ossAccessKey: '',
-  ossSecretKey: '',
-
-  // API配置
-  apiRateLimit: 100,
-  apiLogEnabled: true,
-  apiCorsEnabled: true,
-  corsOrigins: '*'
+const configForm = reactive({
+  name: '',
+  key: '',
+  value: '',
+  type: 'string',
+  description: '',
+  status: 'active'
 })
 
-const encryptionOptions = [
-  { value: 'none', label: '无加密' },
-  { value: 'ssl', label: 'SSL' },
-  { value: 'tls', label: 'TLS' }
+const formErrors = reactive({
+  name: '',
+  key: '',
+  value: ''
+})
+
+const typeOptions = [
+  { value: 'string', label: '文本' },
+  { value: 'number', label: '数字' },
+  { value: 'boolean', label: '布尔' },
+  { value: 'json', label: 'JSON' },
+  { value: 'file', label: '文件' }
 ]
 
-const storageOptions = [
-  { value: 'local', label: '本地存储' },
-  { value: 'oss', label: '阿里云OSS' },
-  { value: 'cos', label: '腾讯云COS' },
-  { value: 'qiniu', label: '七牛云' }
+const statusOptions = [
+  { value: 'active', label: '启用' },
+  { value: 'inactive', label: '禁用' }
 ]
 
-const saveConfig = async () => {
-  saving.value = true
+const displayValue = (row) => {
+  if (row.type === 'file') {
+    return '📁 文件'
+  }
+  if (row.type === 'json') {
+    return '📄 JSON'
+  }
+  if (row.value && row.value.length > 50) {
+    return row.value.substring(0, 50) + '...'
+  }
+  return row.value
+}
+
+const getTypeBadgeVariant = (type) => {
+  const variants = {
+    string: 'primary',
+    number: 'success',
+    boolean: 'warning',
+    json: 'info',
+    file: 'secondary'
+  }
+  return variants[type] || 'secondary'
+}
+
+const handleSearch = () => {
+  page.value = 1
+  loadConfigs()
+}
+
+const handlePageChange = ({ page: newPage, pageSize: newSize }) => {
+  page.value = newPage
+  pageSize.value = newSize
+  loadConfigs()
+}
+
+const loadConfigs = async () => {
+  loading.value = true
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    alert('配置保存成功')
+    await new Promise(resolve => setTimeout(resolve, 500))
+    total.value = configs.value.length
   } finally {
-    saving.value = false
+    loading.value = false
   }
 }
 
-const testEmail = async () => {
-  alert('测试邮件已发送，请检查收件箱')
+const editConfig = (config) => {
+  editingConfig.value = config
+  Object.assign(configForm, {
+    name: config.name,
+    key: config.key,
+    value: config.value,
+    type: config.type,
+    description: config.description,
+    status: config.status
+  })
+  showAddModal.value = true
 }
+
+const deleteConfig = async (config) => {
+  if (confirm(`确定要删除配置 ${config.name} 吗？`)) {
+    configs.value = configs.value.filter(c => c.id !== config.id)
+  }
+}
+
+const handleSubmit = async () => {
+  submitting.value = true
+  try {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    showAddModal.value = false
+    resetForm()
+  } finally {
+    submitting.value = false
+  }
+}
+
+const resetForm = () => {
+  editingConfig.value = null
+  Object.assign(configForm, {
+    name: '',
+    key: '',
+    value: '',
+    type: 'string',
+    description: '',
+    status: 'active'
+  })
+  Object.assign(formErrors, {
+    name: '',
+    key: '',
+    value: ''
+  })
+}
+
+onMounted(() => {
+  loadConfigs()
+})
 </script>

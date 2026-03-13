@@ -7,6 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        // 主色调 - 科技蓝
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -20,6 +21,7 @@ export default {
           900: '#1e3a8a',
           950: '#172554',
         },
+        // 中性色
         secondary: {
           50: '#f8fafc',
           100: '#f1f5f9',
@@ -33,6 +35,7 @@ export default {
           900: '#0f172a',
           950: '#020617',
         },
+        // 成功色 - 翡翠绿
         success: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -45,6 +48,7 @@ export default {
           800: '#166534',
           900: '#14532d',
         },
+        // 警告色 - 琥珀色
         warning: {
           50: '#fffbeb',
           100: '#fef3c7',
@@ -57,22 +61,61 @@ export default {
           800: '#92400e',
           900: '#78350f',
         },
+        // 危险色 - 玫瑰红
         danger: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+          50: '#fff1f2',
+          100: '#ffe4e6',
+          200: '#fecdd3',
+          300: '#fda4af',
+          400: '#fb7185',
+          500: '#f43f5e',
+          600: '#e11d48',
+          700: '#be123c',
+          800: '#9f1239',
+          900: '#881337',
+        },
+        // 信息色 - 天蓝色
+        info: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+        },
+        // 紫色 - 用于特殊功能
+        purple: {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6b21a8',
+          900: '#581c87',
+        },
+        // 天文主题色 - 深空蓝紫
+        astronomy: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
         },
       },
       fontFamily: {
         sans: [
-          'Inter',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
@@ -83,17 +126,53 @@ export default {
           'Noto Sans',
           'sans-serif',
         ],
+        mono: [
+          'ui-monospace',
+          'SFMono-Regular',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          'monospace',
+        ],
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1' }],
       },
       boxShadow: {
+        'none': '0 0 #0000',
+        'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        'card': '0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'card': '0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        'card-hover': '0 0 0 1px rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'modal': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        'inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+        'glow-primary': '0 0 20px rgba(37, 99, 235, 0.3)',
+        'glow-success': '0 0 20px rgba(34, 197, 94, 0.3)',
+        'glow-warning': '0 0 20px rgba(245, 158, 11, 0.3)',
+        'glow-danger': '0 0 20px rgba(244, 63, 94, 0.3)',
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
+        'slide-right': 'slideRight 0.3s ease-out',
+        'slide-left': 'slideLeft 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
+        'scale-up': 'scaleUp 0.3s ease-out',
+        'spin': 'spin 1s linear infinite',
+        'ping': 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce': 'bounce 1s infinite',
+        'float': 'float 3s ease-in-out infinite',
+        'shimmer': 'shimmer 2s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -108,10 +187,85 @@ export default {
           '0%': { transform: 'translateY(-10px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
+        slideRight: {
+          '0%': { transform: 'translateX(-10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideLeft: {
+          '0%': { transform: 'translateX(10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
         scaleIn: {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
+        scaleUp: {
+          '0%': { transform: 'scale(0.9)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        spin: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        ping: {
+          '75%, 100%': { transform: 'scale(2)', opacity: '0' },
+        },
+        pulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '.5' },
+        },
+        bounce: {
+          '0%, 100%': { transform: 'translateY(-25%)', animationTimingFunction: 'cubic-bezier(0.8,0,1,1)' },
+          '50%': { transform: 'none', animationTimingFunction: 'cubic-bezier(0,0,0.2,1)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-1000px 0' },
+          '100%': { backgroundPosition: '1000px 0' },
+        },
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
+      },
+      borderRadius: {
+        'none': '0',
+        'sm': '0.375rem',
+        'DEFAULT': '0.5rem',
+        'md': '0.625rem',
+        'lg': '0.75rem',
+        'xl': '1rem',
+        '2xl': '1.25rem',
+        '3xl': '1.5rem',
+        'full': '9999px',
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      backgroundImage: {
+        'gradient-primary': 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+        'gradient-success': 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+        'gradient-warning': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        'gradient-danger': 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)',
+        'gradient-astronomy': 'linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%)',
+        'gradient-sky': 'linear-gradient(180deg, #0ea5e9 0%, #3b82f6 100%)',
+        'gradient-sunset': 'linear-gradient(180deg, #f59e0b 0%, #ef4444 100%)',
+        'gradient-ocean': 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)',
+      },
+      transitionDuration: {
+        '400': '400ms',
+        '600': '600ms',
+      },
+      zIndex: {
+        '-1': '-1',
+        '60': '60',
+        '70': '70',
+        '80': '80',
+        '90': '90',
       },
     },
   },

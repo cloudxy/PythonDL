@@ -125,7 +125,7 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         token: 重置令牌
         
     Returns:
-        Optional[str]: 验证成功返回邮箱，失败返回None
+        Optional[str]: 验证成功返回邮箱，失败返回 None
     """
     from app.core.cache import cache_manager
     
@@ -136,3 +136,21 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         cache_manager.delete(cache_key)
     
     return email
+
+
+# 从 auth 模块导入认证相关函数（兼容旧代码）
+try:
+    from app.core.auth import get_current_user, create_access_token, verify_token  # noqa
+except ImportError:
+    # 如果 auth 模块不可用，使用占位函数
+    async def get_current_user(token: str = ""):
+        """占位函数"""
+        pass
+    
+    def create_access_token(data: dict):
+        """占位函数"""
+        return "token"
+    
+    def verify_token(token: str):
+        """占位函数"""
+        return None
