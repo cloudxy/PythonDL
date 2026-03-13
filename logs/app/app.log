@@ -318,3 +318,60 @@ WHERE users.username = %(username_1)s
 2026-03-13 14:34:13,754 - app - INFO - __init__.py:25 - Application shutdown
 2026-03-13 14:34:13,755 - app - INFO - __init__.py:25 - Application shutdown
 2026-03-13 14:34:13,754 - app - INFO - __init__.py:25 - Application shutdown
+2026-03-13 14:39:06,729 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:06,731 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:06,731 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:06,762 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:06,763 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:06,763 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:06,826 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:06,827 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:06,827 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:06,863 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:06,864 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:06,865 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,151 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,152 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,153 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,204 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,205 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,206 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,294 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,296 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,296 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,296 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,297 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,297 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,305 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,306 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,306 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,332 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,333 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,334 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,349 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,350 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,350 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,402 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,403 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,403 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,455 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,456 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,457 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,470 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,471 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,471 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,475 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,476 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,476 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,482 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,482 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,483 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:07,508 - app - INFO - __init__.py:20 - Application startup
+2026-03-13 14:39:07,508 - app - INFO - __init__.py:21 - API documentation available at /docs
+2026-03-13 14:39:07,509 - app - INFO - __init__.py:22 - Static files mounted at /static
+2026-03-13 14:39:49,207 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 14:39:49,592 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 200 - Time: 369.66ms
+2026-03-13 14:39:49,593 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 200 in 0.3859s
+2026-03-13 14:40:16,252 - api_logging - INFO - logging.py:144 - Request started: POST http://localhost:8009/api/v1/auth/login
+2026-03-13 14:40:16,575 - monitoring - INFO - monitoring.py:50 - POST /api/v1/auth/login - Status: 200 - Time: 290.46ms
+2026-03-13 14:40:16,576 - api_logging - INFO - logging.py:150 - Request completed: POST http://localhost:8009/api/v1/auth/login - 200 in 0.3245s
