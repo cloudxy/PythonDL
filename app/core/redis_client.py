@@ -295,7 +295,7 @@ class RedisClient:
 redis_client = RedisClient()
 
 
-async def get_redis() -> RedisClient:
+async def get_redis_client() -> RedisClient:
     """获取 Redis 客户端实例"""
     if not redis_client.is_initialized:
         await redis_client.initialize()

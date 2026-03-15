@@ -196,6 +196,24 @@ const routes = [
         component: () => import('@/pages/crawler/TaskList.vue'),
         meta: { title: '爬虫采集' }
       },
+      {
+        path: 'crawler/ai',
+        name: 'AICrawlerTaskList',
+        component: () => import('@/pages/crawler/AITaskList.vue'),
+        meta: { title: 'AI 智能爬虫' }
+      },
+      {
+        path: 'crawler/display',
+        name: 'CrawlerDataDisplay',
+        component: () => import('@/pages/crawler/DataDisplay.vue'),
+        meta: { title: '数据展示' }
+      },
+      {
+        path: 'crawler/config',
+        name: 'CrawlerConfigCenter',
+        component: () => import('@/pages/crawler/ConfigCenter.vue'),
+        meta: { title: '配置中心' }
+      },
 
       // 404页面
       {

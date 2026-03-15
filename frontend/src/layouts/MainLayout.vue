@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-secondary-50 flex">
+  <div class="h-screen bg-secondary-50 flex overflow-hidden">
     <!-- 侧边栏 -->
     <aside 
       :class="[
-        'fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-secondary-200 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0',
+        'fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-secondary-200 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0 lg:flex lg:flex-col lg:h-screen',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       ]"
     >
       <!-- Logo -->
-      <div class="h-16 flex items-center px-6 border-b border-secondary-200">
+      <div class="h-16 flex items-center px-6 border-b border-secondary-200 flex-shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -19,8 +19,8 @@
         </div>
       </div>
 
-      <!-- 导航菜单 -->
-      <nav class="flex-1 overflow-y-auto py-4">
+      <!-- 导航菜单 - 独立滚动 -->
+      <nav class="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-secondary-300 scrollbar-track-transparent hover:scrollbar-thumb-secondary-400">
         <template v-for="item in menuItems" :key="item.path">
           <!-- 有子菜单 -->
           <div v-if="item.children" class="mb-1">
@@ -71,8 +71,8 @@
         </template>
       </nav>
 
-      <!-- 用户信息 -->
-      <div class="border-t border-secondary-200 p-4">
+      <!-- 用户信息 - 固定在底部 -->
+      <div class="border-t border-secondary-200 p-4 flex-shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
             <span class="text-primary-600 font-semibold">{{ userInitials }}</span>
@@ -92,10 +92,10 @@
       class="fixed inset-0 bg-black/50 z-40 lg:hidden"
     ></div>
 
-    <!-- 主内容区域 -->
-    <div class="flex-1 flex flex-col min-w-0">
+    <!-- 主内容区域 - 独立滚动 -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <!-- 顶部导航 -->
-      <header class="h-16 bg-white border-b border-secondary-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+      <header class="h-16 bg-white border-b border-secondary-200 flex items-center justify-between px-4 lg:px-6 flex-shrink-0 z-30">
         <!-- 左侧 -->
         <div class="flex items-center gap-4">
           <button
@@ -176,13 +176,13 @@
         </div>
       </header>
 
-      <!-- 页面内容 -->
-      <main class="flex-1 p-4 lg:p-6 overflow-auto">
+      <!-- 页面内容 - 独立滚动 -->
+      <main class="flex-1 overflow-y-auto p-4 lg:p-6 scrollbar-thin scrollbar-thumb-secondary-300 scrollbar-track-transparent hover:scrollbar-thumb-secondary-400">
         <router-view />
       </main>
 
       <!-- 页脚 -->
-      <footer class="h-12 bg-white border-t border-secondary-200 flex items-center justify-center px-4">
+      <footer class="h-12 bg-white border-t border-secondary-200 flex items-center justify-center px-4 flex-shrink-0">
         <p class="text-sm text-secondary-500">
           &copy; {{ currentYear }} PythonDL 智能分析平台. All rights reserved.
         </p>
@@ -203,7 +203,7 @@ const authStore = useAuthStore()
 const sidebarOpen = ref(false)
 const showUserMenu = ref(false)
 const userMenuRef = ref(null)
-const openSubmenus = ref(['/system', '/finance', '/weather', '/fortune', '/consumption'])
+const openSubmenus = ref([])
 
 const user = computed(() => authStore.user)
 const userInitials = computed(() => {
@@ -338,7 +338,17 @@ const menuItems = [
       { name: '消费预测', path: '/consumption/prediction' },
     ]
   },
-  { name: '爬虫采集', path: '/crawler', icon: CrawlerIcon },
+  {
+    name: '爬虫采集',
+    path: '/crawler',
+    icon: CrawlerIcon,
+    children: [
+      { name: '爬虫任务', path: '/crawler' },
+      { name: 'AI 智能爬虫', path: '/crawler/ai' },
+      { name: '数据展示', path: '/crawler/display' },
+      { name: '配置中心', path: '/crawler/config' },
+    ]
+  },
 ]
 
 const isActiveRoute = (path) => {
@@ -346,7 +356,7 @@ const isActiveRoute = (path) => {
 }
 
 const isSubmenuOpen = (path) => {
-  return openSubmenus.value.includes(path) || isActiveRoute(path)
+  return openSubmenus.value.includes(path)
 }
 
 const toggleSubmenu = (path) => {

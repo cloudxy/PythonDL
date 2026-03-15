@@ -5,7 +5,6 @@
   "reportUnknownMemberType": "none",
   "reportUnknownVariableType": "none",
   "reportMissingTypeAnnotation": "none",
-  "reportIncompatibleVariableType": "none",
   "reportAssignmentType": "none",
   "reportAttributeAccessIssue": "none",
   "reportCallIssue": "none",

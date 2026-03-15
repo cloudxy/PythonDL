@@ -39,7 +39,7 @@
           </div>
 
           <!-- Body -->
-          <div class="modal-body">
+          <div class="modal-body" :style="{ maxHeight: props.maxHeight }">
             <slot />
           </div>
 
@@ -107,6 +107,11 @@ const props = defineProps({
   loading: {
     type: Boolean,
     default: false
+  },
+  // 内容区域最大高度，支持滚动
+  maxHeight: {
+    type: String,
+    default: '70vh'  // 默认最大高度为视口的 70%
   }
 })
 

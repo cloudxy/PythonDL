@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爬虫数据展示 - PythonDL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .card {
+            @apply bg-white rounded-lg shadow-md p-6;
+        }
+        .btn {
+            @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition;
+        }
+        .tab-active {
+            @apply border-b-2 border-blue-500 text-blue-600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- 顶部导航 -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <h1 class="text-2xl font-bold text-gray-800">🕷️ 爬虫数据展示平台</h1>
+            <p class="text-sm text-gray-600 mt-1">实时查看采集的股票、气象、消费数据</p>
+        </div>
+    </nav>
+
+    <!-- 统计卡片 -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" id="statistics-cards">
+            <!-- 动态生成统计卡片 -->
+        </div>
+
+        <!-- 选项卡导航 -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="flex border-b">
+                <button class="flex-1 px-6 py-3 text-center font-medium tab-active" onclick="switchTab('stocks')">
+                    📈 股票数据
+                </button>
+                <button class="flex-1 px-6 py-3 text-center font-medium hover:text-blue-600" onclick="switchTab('weather')">
+                    🌤️ 气象数据
+                </button>
+                <button class="flex-1 px-6 py-3 text-center font-medium hover:text-blue-600" onclick="switchTab('consumption')">
+                    💰 消费数据
+                </button>
+            </div>
+        </div>
+
+        <!-- 股票数据展示 -->
+        <div id="stocks-tab" class="space-y-6">
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">股票行情</h2>
+                <div class="flex gap-4 mb-4">
+                    <input type="text" id="stock-code-input" placeholder="输入股票代码（如：000001.SZ）" 
+                           class="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="searchStock()" class="btn">查询</button>
+                </div>
+                <div id="stock-chart-container" class="h-96 mb-4">
+                    <canvas id="stock-chart"></canvas>
+                </div>
+                <div id="stock-detail" class="hidden">
+                    <h3 class="font-bold text-lg mb-2">股票详情</h3>
+                    <div id="stock-info" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 气象数据展示 -->
+        <div id="weather-tab" class="hidden space-y-6">
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">气象数据</h2>
+                <div class="flex gap-4 mb-4">
+                    <input type="text" id="station-id-input" placeholder="输入站点 ID" 
+                           class="flex-1 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="searchWeather()" class="btn">查询</button>
+                </div>
+                <div id="weather-chart-container" class="h-96 mb-4">
+                    <canvas id="weather-chart"></canvas>
+                </div>
+                <div id="weather-detail" class="hidden">
+                    <h3 class="font-bold text-lg mb-2">站点信息</h3>
+                    <div id="station-info" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 消费数据展示 -->
+        <div id="consumption-tab" class="hidden space-y-6">
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">GDP 数据</h2>
+                <div id="gdp-chart-container" class="h-80 mb-4">
+                    <canvas id="gdp-chart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">经济指标（CPI/PPI/PMI）</h2>
+                <div id="economic-chart-container" class="h-80">
+                    <canvas id="economic-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API 基础 URL
+        const API_BASE = '/api/v1/crawler-display';
+        
+        // Chart.js 实例
+        let stockChart = null;
+        let weatherChart = null;
+        let gdpChart = null;
+        let economicChart = null;
+
+        // 切换选项卡
+        function switchTab(tabName) {
+            const tabs = ['stocks', 'weather', 'consumption'];
+            tabs.forEach(tab => {
+                document.getElementById(`${tab}-tab`).classList.add('hidden');
+            });
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+            
+            // 更新按钮样式
+            const buttons = document.querySelectorAll('.tab-active').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('hover:text-blue-600');
+            });
+            event.target.classList.add('tab-active');
+            event.target.classList.remove('hover:text-blue-600');
+        }
+
+        // 加载统计信息
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_BASE}/statistics`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    const cards = [
+                        { title: '股票数量', value: data.stocks.stock_count, icon: '📊' },
+                        { title: '行情记录', value: data.stocks.quote_count, icon: '📈' },
+                        { title: '气象站点', value: data.weather.station_count, icon: '🌡️' },
+                        { title: '气象记录', value: data.weather.record_count, icon: '🌤️' },
+                        { title: 'GDP 数据', value: data.consumption.gdp_count, icon: '💰' },
+                        { title: '经济指标', value: data.consumption.indicator_count, icon: '📉' }
+                    ];
+                    
+                    const container = document.getElementById('statistics-cards');
+                    container.innerHTML = cards.map(card => `
+                        <div class="card text-center">
+                            <div class="text-3xl mb-2">${card.icon}</div>
+                            <div class="text-gray-600 text-sm">${card.title}</div>
+                            <div class="text-2xl font-bold text-blue-600">${card.value.toLocaleString()}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('加载统计信息失败:', error);
+            }
+        }
+
+        // 查询股票
+        async function searchStock() {
+            const tsCode = document.getElementById('stock-code-input').value.trim();
+            if (!tsCode) {
+                alert('请输入股票代码');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/stocks/${tsCode}/chart?days=90`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderStockChart(result.data.chart_data);
+                    showStockDetail(tsCode);
+                } else {
+                    alert('未找到股票数据');
+                }
+            } catch (error) {
+                console.error('查询股票失败:', error);
+                alert('查询失败');
+            }
+        }
+
+        // 显示股票详情
+        async function showStockDetail(tsCode) {
+            try {
+                const response = await fetch(`${API_BASE}/stocks/${tsCode}?days=1`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const basic = result.data.basic;
+                    const info = document.getElementById('stock-info');
+                    info.innerHTML = `
+                        <div><span class="text-gray-600">代码:</span> ${basic.ts_code}</div>
+                        <div><span class="text-gray-600">名称:</span> ${basic.name || '-'}</div>
+                        <div><span class="text-gray-600">行业:</span> ${basic.industry || '-'}</div>
+                        <div><span class="text-gray-600">地区:</span> ${basic.area || '-'}</div>
+                    `;
+                    document.getElementById('stock-detail').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('加载股票详情失败:', error);
+            }
+        }
+
+        // 渲染股票图表
+        function renderStockChart(chartData) {
+            const ctx = document.getElementById('stock-chart').getContext('2d');
+            
+            if (stockChart) {
+                stockChart.destroy();
+            }
+            
+            stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(d => d.date),
+                    datasets: [{
+                        label: '收盘价',
+                        data: chartData.map(d => d.close),
+                        borderColor: 'rgb(59, 130, 246)',
+                        tension: 0.1
+                    }, {
+                        label: '开盘价',
+                        data: chartData.map(d => d.open),
+                        borderColor: 'rgb(16, 185, 129)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '股票价格走势'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 查询气象数据
+        async function searchWeather() {
+            const stationId = document.getElementById('station-id-input').value.trim();
+            if (!stationId) {
+                alert('请输入站点 ID');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/weather/${stationId}/chart?days=30`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderWeatherChart(result.data.chart_data);
+                } else {
+                    alert('未找到气象数据');
+                }
+            } catch (error) {
+                console.error('查询气象数据失败:', error);
+                alert('查询失败');
+            }
+        }
+
+        // 渲染气象图表
+        function renderWeatherChart(chartData) {
+            const ctx = document.getElementById('weather-chart').getContext('2d');
+            
+            if (weatherChart) {
+                weatherChart.destroy();
+            }
+            
+            weatherChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(d => d.date),
+                    datasets: [{
+                        label: '最高温度',
+                        data: chartData.map(d => d.max_temp),
+                        borderColor: 'rgb(239, 68, 68)',
+                        tension: 0.1
+                    }, {
+                        label: '最低温度',
+                        data: chartData.map(d => d.min_temp),
+                        borderColor: 'rgb(59, 130, 246)',
+                        tension: 0.1
+                    }, {
+                        label: '平均温度',
+                        data: chartData.map(d => d.avg_temp),
+                        borderColor: 'rgb(16, 185, 129)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '温度变化趋势'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 加载 GDP 图表
+        async function loadGDPChart() {
+            try {
+                const response = await fetch(`${API_BASE}/consumption/gdp/chart?years=20`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const ctx = document.getElementById('gdp-chart').getContext('2d');
+                    gdpChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: result.data.chart_data.map(d => d.year),
+                            datasets: [{
+                                label: 'GDP (亿元)',
+                                data: result.data.chart_data.map(d => d.gdp / 100000000),
+                                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                                borderColor: 'rgb(59, 130, 246)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('加载 GDP 图表失败:', error);
+            }
+        }
+
+        // 加载经济指标图表
+        async function loadEconomicChart() {
+            try {
+                const response = await fetch(`${API_BASE}/consumption/economic/chart?months=24`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const ctx = document.getElementById('economic-chart').getContext('2d');
+                    economicChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: result.data.chart_data.map(d => d.date),
+                            datasets: [{
+                                label: 'CPI',
+                                data: result.data.chart_data.map(d => d.cpi),
+                                borderColor: 'rgb(239, 68, 68)',
+                                tension: 0.1
+                            }, {
+                                label: 'PMI',
+                                data: result.data.chart_data.map(d => d.pmi),
+                                borderColor: 'rgb(16, 185, 129)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('加载经济指标图表失败:', error);
+            }
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStatistics();
+            loadGDPChart();
+            loadEconomicChart();
+        });
+    </script>
+</body>
+</html>
